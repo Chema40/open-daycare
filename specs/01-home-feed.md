@@ -1,6 +1,6 @@
 # SPEC 01 — Home Feed de OpenDayCare
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** None
 > **Date:** 2026-09-22
 > **Objective:** Reemplazar la pantalla inicial de Next.js por un home estático responsive que replique visualmente el feed de `references/pantallas/feed.dc.html`.
@@ -43,19 +43,19 @@ This feature introduces no new data structures. It renders fixed presentation da
 
 ## Acceptance criteria
 
-- [ ] La ruta `/` carga el home de OpenDayCare sin errores de renderizado.
-- [ ] El home contiene sidebar, marca OpenDayCare, botón Nueva publicación, navegación Feed/Niños/Avisos/Mi cuenta y perfil de Caro.
-- [ ] El contenido principal muestra el encabezado de Sala Soles, el saludo, la fecha, el compositor y la sección PUBLICADO HOY.
-- [ ] Se muestran exactamente tres publicaciones estáticas: un logro de Mateo, una actividad con foto y un anuncio general.
-- [ ] Los textos, nombres, horas, destinatarios, etiquetas y contadores coinciden con la referencia `feed.dc.html`.
-- [ ] La paleta, tipografías Fredoka y Nunito, tamaños, bordes redondeados, sombras y espaciado son visualmente equivalentes a la referencia.
-- [ ] La pantalla conserva una composición usable en viewport de escritorio sin desbordamiento horizontal.
-- [ ] La pantalla conserva una composición usable en viewport móvil sin desbordamiento horizontal y con navegación legible.
-- [ ] Los enlaces visuales usan destinos inertes y no intentan acceder a autenticación, API o rutas no implementadas.
-- [ ] Los elementos interactivos tienen nombre accesible y pueden recibir foco de teclado visible.
-- [ ] `npm run lint` termina correctamente, considerando únicamente los archivos de aplicación modificados por esta spec.
-- [ ] `npm run build` termina correctamente.
-- [ ] La comparación manual en navegador confirma la réplica en viewport desktop y móvil.
+- [X] La ruta `/` carga el home de OpenDayCare sin errores de renderizado.
+- [X] El home contiene sidebar, marca OpenDayCare, botón Nueva publicación, navegación Feed/Niños/Avisos/Mi cuenta y perfil de Caro.
+- [X] El contenido principal muestra el encabezado de Sala Soles, el saludo, la fecha, el compositor y la sección PUBLICADO HOY.
+- [X] Se muestran exactamente tres publicaciones estáticas: un logro de Mateo, una actividad con foto y un anuncio general.
+- [X] Los textos, nombres, horas, destinatarios, etiquetas y contadores coinciden con la referencia `feed.dc.html`.
+- [X] La paleta, tipografías Fredoka y Nunito, tamaños, bordes redondeados, sombras y espaciado son visualmente equivalentes a la referencia.
+- [X] La pantalla conserva una composición usable en viewport de escritorio sin desbordamiento horizontal.
+- [X] La pantalla conserva una composición usable en viewport móvil sin desbordamiento horizontal y con navegación legible.
+- [X] Los enlaces visuales usan destinos inertes y no intentan acceder a autenticación, API o rutas no implementadas.
+- [X] Los elementos interactivos tienen nombre accesible y pueden recibir foco de teclado visible.
+- [X] `npm run lint` termina correctamente, considerando únicamente los archivos de aplicación modificados por esta spec.
+- [X] `npm run build` termina correctamente.
+- [X] La comparación manual en navegador confirma la réplica en viewport desktop y móvil.
 
 ## Decisions
 

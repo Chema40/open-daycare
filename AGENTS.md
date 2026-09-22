@@ -24,6 +24,11 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - /spec Usaremos esta habilidad para crear las especificaciones.
 - /spec-impl esta skill para hacer las implementaciones. 
 
+## Verification
+
+- `acceptance-verifier` (`.opencode/agent/acceptance-verifier.md`) verifica los criterios de aceptación de una spec con inspección del código, comandos del proyecto, Next.js, Playwright y evidencia visual. Actualiza únicamente los checks y las notas de verificación de la spec.
+- `/verify-spec [ruta-de-la-spec]` delega la verificación al agente `acceptance-verifier`. Si no se indica una ruta y hay varias specs, solicitar aclaración antes de continuar.
+
 ## Reglas de código
 
 - Usar código limpio, nombres, funciones y variables en inglés
