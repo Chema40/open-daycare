@@ -79,26 +79,34 @@ El módulo expondrá una colección estática de ocho niños y una función de r
 
 ## Acceptance criteria
 
-- [ ] La ruta `/kids` carga sin errores de renderizado.
-- [ ] La ruta `/kids` es accesible desde el enlace Niños del menú del home.
-- [ ] `/kids` muestra exactamente ocho niños agrupados bajo Sala Soles.
-- [ ] Cada tarjeta muestra el nombre, edad, padres vinculados y etiqueta o estado correspondiente a la referencia.
-- [ ] El buscador aparece visualmente y no altera la lista al escribir.
-- [ ] Las acciones Agregar niño y las acciones de perfil mantienen apariencia interactiva y destino inerte (`#`).
-- [ ] Cada niño de la lista enlaza a un perfil identificable.
-- [ ] Un ID numérico válido, como `/kids/1`, muestra el perfil correspondiente.
-- [ ] Un slug válido, como `/kids/mateo-fernandez`, muestra el mismo perfil correspondiente.
-- [ ] Los perfiles de los ocho niños pueden abrirse desde sus tarjetas sin depender de API o persistencia.
-- [ ] El perfil muestra nombre, edad, sala, alergias o notas, fecha de nacimiento, ingreso y padres vinculados cuando existan.
-- [ ] El enlace Volver a Niños devuelve a `/kids`.
-- [ ] La navegación lateral, marca OpenDayCare y perfil de Caro mantienen la composición visual del home.
-- [ ] La paleta, tipografías Fredoka y Nunito, tamaños, bordes, sombras y espaciado son visualmente equivalentes a las referencias.
-- [ ] `/kids` y los perfiles se pueden usar en viewport desktop sin scroll horizontal.
-- [ ] `/kids` y los perfiles se pueden usar en viewport móvil sin scroll horizontal.
-- [ ] Los elementos interactivos tienen nombres accesibles y foco de teclado visible.
-- [ ] `npm run lint` termina correctamente considerando los archivos de aplicación modificados por esta spec.
-- [ ] `npm run build` termina correctamente.
-- [ ] La comparación manual en navegador confirma la réplica visual en `/kids` y un perfil tanto en desktop como en móvil.
+- [X] La ruta `/kids` carga sin errores de renderizado.
+- [X] La ruta `/kids` es accesible desde el enlace Niños del menú del home.
+- [X] `/kids` muestra exactamente ocho niños agrupados bajo Sala Soles.
+- [X] Cada tarjeta muestra el nombre, edad, padres vinculados y etiqueta o estado correspondiente a la referencia.
+- [X] El buscador aparece visualmente y no altera la lista al escribir.
+- [X] Las acciones Agregar niño y las acciones de perfil mantienen apariencia interactiva y destino inerte (`#`).
+- [X] Cada niño de la lista enlaza a un perfil identificable.
+- [X] Un ID numérico válido, como `/kids/1`, muestra el perfil correspondiente.
+- [X] Un slug válido, como `/kids/mateo-fernandez`, muestra el mismo perfil correspondiente.
+- [X] Los perfiles de los ocho niños pueden abrirse desde sus tarjetas sin depender de API o persistencia.
+- [X] El perfil muestra nombre, edad, sala, alergias o notas, fecha de nacimiento, ingreso y padres vinculados cuando existan.
+- [X] El enlace Volver a Niños devuelve a `/kids`.
+- [X] La navegación lateral, marca OpenDayCare y perfil de Caro mantienen la composición visual del home.
+- [X] La paleta, tipografías Fredoka y Nunito, tamaños, bordes, sombras y espaciado son visualmente equivalentes a las referencias.
+- [X] `/kids` y los perfiles se pueden usar en viewport desktop sin scroll horizontal.
+- [X] `/kids` y los perfiles se pueden usar en viewport móvil sin scroll horizontal.
+- [X] Los elementos interactivos tienen nombres accesibles y foco de teclado visible.
+- [X] `npm run lint` termina correctamente considerando los archivos de aplicación modificados por esta spec.
+- [X] `npm run build` termina correctamente.
+- [X] La comparación manual en navegador confirma la réplica visual en `/kids` y un perfil tanto en desktop como en móvil.
+
+## Verification notes
+
+- Verificados `/kids`, `/kids/1` y `/kids/mateo-fernandez` con Playwright en viewports desktop (1440×900) y móvil (390×844); no hubo errores de renderizado ni scroll horizontal.
+- Comprobados los ocho slugs de perfil, el enlace `Niños`, el enlace `Volver a Niños`, los destinos `#`, nombres accesibles y foco visible.
+- El buscador conserva los ocho registros después de escribir.
+- Evidencia visual: `.playwright-mcp/kids-desktop-1440.png`, `.playwright-mcp/profile-desktop-1440.png`, `.playwright-mcp/profile-mobile-390.png`, `.playwright-mcp/reference-kids-desktop.png` y `.playwright-mcp/reference-profile-desktop.png`.
+- `npx tsc --noEmit` y `npm run build` finalizaron correctamente. `npm run lint` reportó errores únicamente en `references/pantallas/support.js`, fuera de los archivos de aplicación de esta spec.
 
 ## Decisions
 
