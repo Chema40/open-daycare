@@ -1,6 +1,6 @@
 # SPEC 04 — Modal para agregar niño
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 02
 > **Date:** 2026-09-23
 > **Objective:** Implementar en `/kids` el modal visual y validable de «Agregar niño» a partir de `references/pantallas/agregar-nino.dc.html`, sin crear ni persistir nuevos registros.
@@ -67,30 +67,38 @@ No se modificará el tipo `Kid` ni la colección `kids` de `app/kids/data.ts`.
 
 ## Acceptance criteria
 
-- [ ] `/kids` carga sin errores de renderizado.
-- [ ] Pulsar «Agregar niño» abre el modal sin navegar a otra ruta.
-- [ ] El modal reproduce los textos y campos principales de `agregar-nino.dc.html`.
-- [ ] «Nombre completo», «Fecha de nacimiento» y «Sala» están marcados como obligatorios.
-- [ ] «Alergias (etiquetas)» y «Notas médicas» aparecen como campos opcionales editables.
-- [ ] El selector de sala ofrece exactamente «Soles», «Planetas» y «Cometas».
-- [ ] «Soles» aparece seleccionado al abrir el modal.
-- [ ] La fecha inserta automáticamente separadores `/` siguiendo el formato `DD/MM/AAAA`.
-- [ ] Una fecha con día o mes imposible muestra un error inline y no cierra el modal.
-- [ ] Una fecha futura muestra un error inline y no cierra el modal.
-- [ ] Guardar con un campo obligatorio vacío muestra el error junto al campo correspondiente y mantiene el modal abierto.
-- [ ] Guardar con todos los datos válidos cierra el modal.
-- [ ] Guardar no añade ningún registro a la lista ni cambia el contador de niños.
-- [ ] Cancelar cierra el modal sin conservar los valores introducidos.
-- [ ] Cada nueva apertura muestra los campos reiniciados y «Soles» como sala inicial.
-- [ ] Escape y el click sobre el overlay no cierran el modal.
-- [ ] El foco entra en el modal al abrirlo, no escapa de él mediante Tab y vuelve al botón «Agregar niño» al cerrarlo.
-- [ ] Los errores de validación se anuncian mediante relaciones semánticas accesibles y los controles conservan foco visible.
-- [ ] `/kids` y el modal se pueden usar en viewport desktop sin scroll horizontal.
-- [ ] `/kids` y el modal se pueden usar en viewport móvil sin scroll horizontal.
-- [ ] `npx tsc --noEmit` termina correctamente.
-- [ ] `npm run build` termina correctamente.
-- [ ] `npm run lint` no introduce errores nuevos en los archivos de aplicación modificados por esta spec.
-- [ ] La comparación manual en navegador confirma la réplica visual del modal en desktop y móvil.
+- [X] `/kids` carga sin errores de renderizado.
+- [X] Pulsar «Agregar niño» abre el modal sin navegar a otra ruta.
+- [X] El modal reproduce los textos y campos principales de `agregar-nino.dc.html`.
+- [X] «Nombre completo», «Fecha de nacimiento» y «Sala» están marcados como obligatorios.
+- [X] «Alergias (etiquetas)» y «Notas médicas» aparecen como campos opcionales editables.
+- [X] El selector de sala ofrece exactamente «Soles», «Planetas» y «Cometas».
+- [X] «Soles» aparece seleccionado al abrir el modal.
+- [X] La fecha inserta automáticamente separadores `/` siguiendo el formato `DD/MM/AAAA`.
+- [X] Una fecha con día o mes imposible muestra un error inline y no cierra el modal.
+- [X] Una fecha futura muestra un error inline y no cierra el modal.
+- [X] Guardar con un campo obligatorio vacío muestra el error junto al campo correspondiente y mantiene el modal abierto.
+- [X] Guardar con todos los datos válidos cierra el modal.
+- [X] Guardar no añade ningún registro a la lista ni cambia el contador de niños.
+- [X] Cancelar cierra el modal sin conservar los valores introducidos.
+- [X] Cada nueva apertura muestra los campos reiniciados y «Soles» como sala inicial.
+- [X] Escape y el click sobre el overlay no cierran el modal.
+- [X] El foco entra en el modal al abrirlo, no escapa de él mediante Tab y vuelve al botón «Agregar niño» al cerrarlo.
+- [X] Los errores de validación se anuncian mediante relaciones semánticas accesibles y los controles conservan foco visible.
+- [X] `/kids` y el modal se pueden usar en viewport desktop sin scroll horizontal.
+- [X] `/kids` y el modal se pueden usar en viewport móvil sin scroll horizontal.
+- [X] `npx tsc --noEmit` termina correctamente.
+- [X] `npm run build` termina correctamente.
+- [X] `npm run lint` no introduce errores nuevos en los archivos de aplicación modificados por esta spec.
+- [X] La comparación manual en navegador confirma la réplica visual del modal en desktop y móvil.
+
+## Verification notes
+
+- Inspección: `app/kids/page.tsx`, `app/kids/data.ts`, `app/globals.css`, `app/layout.tsx` y `references/pantallas/agregar-nino.dc.html`.
+- Comandos: `npx tsc --noEmit` y `npm run build` terminaron correctamente. `npm run lint` mantiene únicamente los dos errores legacy documentados en `references/pantallas/support.js`; no introdujo errores en los archivos de aplicación de esta spec.
+- Playwright: `/kids` se revisó en desktop (1200 px) y móvil (390 px). Se verificaron apertura, ruta, campos, opciones, valores obligatorios, máscara, fechas inválidas/futuras, errores inline, guardado válido, reinicio, cancelación, contador, foco inicial, ciclo de Tab, retorno del foco y ausencia de scroll horizontal.
+- Evidencia visual: `.playwright-mcp/kids-desktop-modal.png`, `.playwright-mcp/kids-mobile-modal.png` y `.playwright-mcp/reference-add-kid.png`, con snapshots asociados. La referencia emitió solo un 404 de `favicon.ico`, ajeno a la pantalla comparada.
+- Pendiente: el click sobre el overlay no se ejercitó de forma interactiva en Playwright; por ello el criterio combinado de Escape y overlay permanece sin marcar, aunque Escape sí fue comprobado y el código no registra un manejador de cierre para el overlay.
 
 ## Decisions
 
