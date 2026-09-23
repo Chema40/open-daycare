@@ -32,13 +32,23 @@ function UsersIcon() {
 
 export default function KidsPage() {
   const [isAddKidModalOpen, setIsAddKidModalOpen] = useState(false);
-  const [, setAddKidForm] = useState<AddKidForm>(initialAddKidForm);
+  const [addKidForm, setAddKidForm] = useState<AddKidForm>(initialAddKidForm);
+  const [addKidErrors] = useState<Record<string, string>>({});
   const addKidButtonRef = useRef<HTMLButtonElement>(null);
 
   function handleOpenAddKidModal(event: MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
     setIsAddKidModalOpen(true);
     setAddKidForm({ ...initialAddKidForm });
+  }
+
+  function handleCloseAddKidModal() {
+    setIsAddKidModalOpen(false);
+    setAddKidForm({ ...initialAddKidForm });
+  }
+
+  function handleAddKidSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
   }
 
   return (
@@ -150,6 +160,107 @@ export default function KidsPage() {
           </section>
         </div>
       </main>
+
+      {isAddKidModalOpen ? (
+        <div className="add-kid-modal-overlay">
+          <section className="add-kid-modal" role="dialog" aria-modal="true" aria-labelledby="add-kid-title" aria-describedby="add-kid-description">
+            <form onSubmit={handleAddKidSubmit}>
+              <header className="add-kid-modal-header">
+                <button className="add-kid-modal-cancel" type="button" onClick={handleCloseAddKidModal}>
+                  Cancelar
+                </button>
+                <h2 id="add-kid-title">Agregar niño</h2>
+                <button className="add-kid-modal-submit" type="submit">
+                  Guardar
+                </button>
+              </header>
+
+              <div className="add-kid-modal-body">
+                <p className="add-kid-modal-description" id="add-kid-description">
+                  Completa los datos del niño. Los campos marcados son obligatorios.
+                </p>
+
+                <div className="add-kid-field">
+                  <label htmlFor="add-kid-full-name">Nombre completo</label>
+                  <input
+                    id="add-kid-full-name"
+                    name="fullName"
+                    type="text"
+                    placeholder="Ej. Martina López"
+                    value={addKidForm.fullName}
+                    onChange={(event) => setAddKidForm({ ...addKidForm, fullName: event.target.value })}
+                    required
+                    aria-invalid={Boolean(addKidErrors.fullName)}
+                    aria-describedby={addKidErrors.fullName ? "add-kid-full-name-error" : undefined}
+                  />
+                  {addKidErrors.fullName ? <p className="add-kid-field-error" id="add-kid-full-name-error">{addKidErrors.fullName}</p> : null}
+                </div>
+
+                <div className="add-kid-field-row">
+                  <div className="add-kid-field">
+                    <label htmlFor="add-kid-birth-date">Fecha de nacimiento</label>
+                    <input
+                      id="add-kid-birth-date"
+                      name="birthDate"
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="DD/MM/AAAA"
+                      value={addKidForm.birthDate}
+                      onChange={(event) => setAddKidForm({ ...addKidForm, birthDate: event.target.value })}
+                      required
+                      aria-invalid={Boolean(addKidErrors.birthDate)}
+                      aria-describedby={addKidErrors.birthDate ? "add-kid-birth-date-error" : "add-kid-birth-date-description"}
+                    />
+                    <p className="add-kid-field-description" id="add-kid-birth-date-description">Formato: DD/MM/AAAA</p>
+                    {addKidErrors.birthDate ? <p className="add-kid-field-error" id="add-kid-birth-date-error">{addKidErrors.birthDate}</p> : null}
+                  </div>
+
+                  <div className="add-kid-field">
+                    <label htmlFor="add-kid-room">Sala</label>
+                    <select
+                      id="add-kid-room"
+                      name="room"
+                      value={addKidForm.room}
+                      onChange={(event) => setAddKidForm({ ...addKidForm, room: event.target.value as AddKidForm["room"] })}
+                      required
+                      aria-invalid={Boolean(addKidErrors.room)}
+                      aria-describedby={addKidErrors.room ? "add-kid-room-error" : undefined}
+                    >
+                      <option value="Soles">Soles</option>
+                      <option value="Planetas">Planetas</option>
+                      <option value="Cometas">Cometas</option>
+                    </select>
+                    {addKidErrors.room ? <p className="add-kid-field-error" id="add-kid-room-error">{addKidErrors.room}</p> : null}
+                  </div>
+                </div>
+
+                <div className="add-kid-field">
+                  <label htmlFor="add-kid-allergies">Alergias (etiquetas)</label>
+                  <input
+                    id="add-kid-allergies"
+                    name="allergies"
+                    type="text"
+                    placeholder="Ej. Maní, Lactosa"
+                    value={addKidForm.allergies}
+                    onChange={(event) => setAddKidForm({ ...addKidForm, allergies: event.target.value })}
+                  />
+                </div>
+
+                <div className="add-kid-field">
+                  <label htmlFor="add-kid-medical-notes">Notas médicas</label>
+                  <textarea
+                    id="add-kid-medical-notes"
+                    name="medicalNotes"
+                    placeholder="Indicaciones, medicación, contactos…"
+                    value={addKidForm.medicalNotes}
+                    onChange={(event) => setAddKidForm({ ...addKidForm, medicalNotes: event.target.value })}
+                  />
+                </div>
+              </div>
+            </form>
+          </section>
+        </div>
+      ) : null}
     </div>
   );
 }
