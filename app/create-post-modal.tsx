@@ -19,6 +19,10 @@ export type CreatePostForm = {
   description: string;
 };
 
+export type CreatePostErrors = Partial<
+  Record<"recipient" | "type" | "description", string>
+>;
+
 const emptyForm: CreatePostForm = {
   recipient: "",
   type: "",
@@ -54,6 +58,7 @@ export default function CreatePostModal({
   originRef,
 }: CreatePostModalProps) {
   const [form, setForm] = useState<CreatePostForm>(emptyForm);
+  const [errors, setErrors] = useState<CreatePostErrors>({});
 
   if (!isOpen) {
     return null;
@@ -63,10 +68,34 @@ export default function CreatePostModal({
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    const nextErrors: CreatePostErrors = {};
+
+    if (!form.recipient) {
+      nextErrors.recipient = "Elegí un destinatario.";
+    }
+
+    if (!form.type) {
+      nextErrors.type = "Elegí un tipo de publicación.";
+    }
+
+    if (!form.description.trim()) {
+      nextErrors.description = "Escribí una descripción.";
+    }
+
+    setErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length > 0) {
+      return;
+    }
+
+    setForm(emptyForm);
+    onClose();
   };
 
   const handleCancel = () => {
     setForm(emptyForm);
+    setErrors({});
     onClose();
   };
 
@@ -88,7 +117,11 @@ export default function CreatePostModal({
           </header>
 
           <div className="create-post-modal-body">
-            <fieldset className="create-post-fieldset">
+            <fieldset
+              className="create-post-fieldset"
+              aria-invalid={Boolean(errors.recipient)}
+              aria-describedby={errors.recipient ? "create-post-recipient-error" : undefined}
+            >
               <legend>Para</legend>
               <div className="create-post-options">
                 {recipients.map((recipient) => (
@@ -98,6 +131,7 @@ export default function CreatePostModal({
                       name="recipient"
                       value={recipient}
                       checked={form.recipient === recipient}
+                      aria-describedby={errors.recipient ? "create-post-recipient-error" : undefined}
                       onChange={() => setForm({ ...form, recipient })}
                     />
                     <span aria-hidden="true">{recipient === "Toda la sala" ? "" : recipient[0]}</span>
@@ -105,9 +139,18 @@ export default function CreatePostModal({
                   </label>
                 ))}
               </div>
+              {errors.recipient && (
+                <p id="create-post-recipient-error" role="alert">
+                  {errors.recipient}
+                </p>
+              )}
             </fieldset>
 
-            <fieldset className="create-post-fieldset">
+            <fieldset
+              className="create-post-fieldset"
+              aria-invalid={Boolean(errors.type)}
+              aria-describedby={errors.type ? "create-post-type-error" : undefined}
+            >
               <legend>Tipo</legend>
               <div className="create-post-options">
                 {postTypes.map((postType) => (
@@ -117,12 +160,18 @@ export default function CreatePostModal({
                       name="type"
                       value={postType}
                       checked={form.type === postType}
+                      aria-describedby={errors.type ? "create-post-type-error" : undefined}
                       onChange={() => setForm({ ...form, type: postType })}
                     />
                     {postType}
                   </label>
                 ))}
               </div>
+              {errors.type && (
+                <p id="create-post-type-error" role="alert">
+                  {errors.type}
+                </p>
+              )}
             </fieldset>
 
             <div className="create-post-fieldset">
@@ -132,8 +181,15 @@ export default function CreatePostModal({
                 name="description"
                 placeholder="Contá cómo le fue hoy…"
                 value={form.description}
+                aria-invalid={Boolean(errors.description)}
+                aria-describedby={errors.description ? "create-post-description-error" : undefined}
                 onChange={(event) => setForm({ ...form, description: event.target.value })}
               />
+              {errors.description && (
+                <p id="create-post-description-error" role="alert">
+                  {errors.description}
+                </p>
+              )}
             </div>
 
             <div className="create-post-fieldset">
