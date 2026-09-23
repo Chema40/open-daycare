@@ -186,7 +186,19 @@ export default function LinkParentModal({
             <p>a {childName}</p>
           </div>
           <button type="button" onClick={handleClose} aria-label="Cerrar modal">
-            Cerrar
+            <svg
+              aria-hidden="true"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
           </button>
         </header>
 
@@ -197,7 +209,26 @@ export default function LinkParentModal({
             noValidate
             data-step={step}
           >
-            <p>Completa los datos para enviar una invitación.</p>
+            <div className="link-parent-info">
+              <svg
+                aria-hidden="true"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 16v-4M12 8h.01" />
+              </svg>
+              <span>
+                Le enviaremos un correo con un código para que active su cuenta. Solo verá el
+                feed de {childName}.
+              </span>
+            </div>
 
             <div className="link-parent-field">
               <label htmlFor="link-parent-name">Nombre del padre/madre</label>

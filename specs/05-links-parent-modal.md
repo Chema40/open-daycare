@@ -80,35 +80,42 @@ El código de invitación se mostrará como un valor fijo de demo equivalente a 
 
 ## Acceptance criteria
 
-- [ ] `/kids/1` carga sin errores de renderizado.
-- [ ] Un perfil con padres muestra el activador «Vincular otro padre».
-- [ ] Un perfil sin padres muestra el activador «Vincular padre».
-- [ ] Pulsar cualquiera de los dos activadores abre el modal sin navegar a otra ruta.
-- [ ] El modal muestra el nombre del niño correspondiente al perfil abierto.
-- [ ] El modal reproduce la composición visual principal de `vincular-padre.dc.html`.
-- [ ] El modal muestra los campos «Nombre del padre/madre», «Email» y «Parentesco».
-- [ ] Los tres campos están marcados como obligatorios.
-- [ ] El selector de parentesco ofrece exactamente «Mamá», «Papá» y «Tutor/a».
-- [ ] El código de invitación `7K4P9` aparece junto al vencimiento de 7 días.
-- [ ] Enviar el formulario con un campo obligatorio vacío muestra un error inline y mantiene el modal abierto.
-- [ ] Enviar un email con formato inválido muestra un error inline y mantiene el modal abierto.
-- [ ] Enviar datos válidos muestra el paso de verificación dentro del mismo modal.
-- [ ] El paso de verificación muestra un campo para el código y un mensaje de envío al email introducido.
-- [ ] Introducir un código distinto de `123456` muestra un error inline y no cierra el modal.
-- [ ] Introducir `123456` muestra una confirmación temporal y cierra el modal.
-- [ ] «Reenviar código» produce únicamente un estado visual temporal y no realiza una petición de red.
-- [ ] Cancelar o usar el control de cierre cierra el modal sin modificar el perfil.
-- [ ] Escape y el click sobre el overlay no cierran el modal.
-- [ ] Cada nueva apertura reinicia los campos, el paso y los errores.
-- [ ] El foco entra en el modal al abrirlo, no escapa mediante Tab y vuelve al activador al cerrarlo.
-- [ ] Los errores se relacionan semánticamente con sus controles y los elementos interactivos conservan foco visible.
-- [ ] La invitación no modifica `app/kids/data.ts`, el perfil ni la lista después de completar la verificación.
-- [ ] El perfil y el modal se pueden usar en viewport desktop sin scroll horizontal.
-- [ ] El perfil y el modal se pueden usar en viewport móvil sin scroll horizontal.
-- [ ] `npx tsc --noEmit` termina correctamente.
-- [ ] `npm run build` termina correctamente.
-- [ ] `npm run lint` no introduce errores nuevos en los archivos de aplicación modificados por esta spec.
-- [ ] La comparación manual en navegador confirma la réplica visual del modal en desktop y móvil.
+- [x] `/kids/1` carga sin errores de renderizado.
+- [x] Un perfil con padres muestra el activador «Vincular otro padre».
+- [x] Un perfil sin padres muestra el activador «Vincular padre».
+- [x] Pulsar cualquiera de los dos activadores abre el modal sin navegar a otra ruta.
+- [x] El modal muestra el nombre del niño correspondiente al perfil abierto.
+- [x] El modal reproduce la composición visual principal de `vincular-padre.dc.html`.
+- [x] El modal muestra los campos «Nombre del padre/madre», «Email» y «Parentesco».
+- [x] Los tres campos están marcados como obligatorios.
+- [x] El selector de parentesco ofrece exactamente «Mamá», «Papá» y «Tutor/a».
+- [x] El código de invitación `7K4P9` aparece junto al vencimiento de 7 días.
+- [x] Enviar el formulario con un campo obligatorio vacío muestra un error inline y mantiene el modal abierto.
+- [x] Enviar un email con formato inválido muestra un error inline y mantiene el modal abierto.
+- [x] Enviar datos válidos muestra el paso de verificación dentro del mismo modal.
+- [x] El paso de verificación muestra un campo para el código y un mensaje de envío al email introducido.
+- [x] Introducir un código distinto de `123456` muestra un error inline y no cierra el modal.
+- [x] Introducir `123456` muestra una confirmación temporal y cierra el modal.
+- [x] «Reenviar código» produce únicamente un estado visual temporal y no realiza una petición de red.
+- [x] Cancelar o usar el control de cierre cierra el modal sin modificar el perfil.
+- [x] Escape y el click sobre el overlay no cierran el modal.
+- [x] Cada nueva apertura reinicia los campos, el paso y los errores.
+- [x] El foco entra en el modal al abrirlo, no escapa mediante Tab y vuelve al activador al cerrarlo.
+- [x] Los errores se relacionan semánticamente con sus controles y los elementos interactivos conservan foco visible.
+- [x] La invitación no modifica `app/kids/data.ts`, el perfil ni la lista después de completar la verificación.
+- [x] El perfil y el modal se pueden usar en viewport desktop sin scroll horizontal.
+- [x] El perfil y el modal se pueden usar en viewport móvil sin scroll horizontal.
+- [x] `npx tsc --noEmit` termina correctamente.
+- [x] `npm run build` termina correctamente.
+- [x] `npm run lint` no introduce errores nuevos en los archivos de aplicación modificados por esta spec.
+- [x] La comparación manual en navegador confirma la réplica visual del modal en desktop y móvil.
+
+## Verification notes
+
+- Código inspeccionado: `app/kids/[identifier]/page.tsx`, `link-parent-modal.tsx`, `globals.css` y `app/kids/data.ts`; `generateStaticParams` y el patrón Server Component + Client Component son compatibles con Next.js App Router según Context7.
+- Playwright: `/kids/1` (desktop 1200×678) y `/kids/4` (móvil 390×844). Se probaron apertura de ambos activadores, validación vacía/email, verificación incorrecta y `123456`, reenvío, cierre explícito, Escape, overlay, reinicio, foco inicial, ciclo de Tab, devolución de foco y ausencia de scroll horizontal. Evidencia inicial: `.playwright-mcp/spec-05-links-parent-desktop.png`, `.playwright-mcp/spec-05-links-parent-mobile.png` y snapshots `page-2026-09-23T13-59-26-890Z.yml`, `page-2026-09-23T13-59-42-271Z.yml`. Evidencia final de la réplica visual: `.playwright-mcp/spec-05-links-parent-desktop-final.png`, `.playwright-mcp/spec-05-links-parent-mobile-final.png` y snapshot `page-2026-09-23T14-06-39-151Z.yml`.
+- Comandos: `npx tsc --noEmit` y `npm run build` correctos. `npm run lint` mantiene únicamente los 2 errores legacy documentados en `references/pantallas/support.js`; no hay errores en los archivos de aplicación de esta spec.
+- Comparación visual final: el modal incorpora el panel informativo azul con icono y el control de cierre cuadrado con icono `X` de `references/pantallas/vincular-padre.dc.html`. La revisión en desktop y móvil confirma la composición equivalente y ausencia de scroll horizontal; en móvil, `document.documentElement.scrollWidth` fue 380px frente a un viewport de 390px.
 
 ## Decisions
 

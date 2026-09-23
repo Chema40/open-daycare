@@ -1137,11 +1137,15 @@ textarea:focus-visible {
 }
 
 .link-parent-modal-header button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex: none;
-  padding: 9px 12px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
   background: #f0e6d8;
   color: var(--muted);
-  font-size: 12px;
 }
 
 .link-parent-modal-content {
@@ -1149,6 +1153,25 @@ textarea:focus-visible {
   flex-direction: column;
   gap: 18px;
   padding: 22px 26px 26px;
+}
+
+.link-parent-info {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  margin-bottom: 2px;
+  padding: 13px 16px;
+  border-radius: 14px;
+  background: #e3ecfb;
+  color: #3f5694;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+
+.link-parent-info svg {
+  flex: none;
+  margin-top: 1px;
+  color: #4e72c8;
 }
 
 .link-parent-modal-content > p {
