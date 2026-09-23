@@ -16,11 +16,13 @@ export type PostType =
 export type CreatePostForm = {
   recipient: PostRecipient | "";
   type: PostType | "";
+  description: string;
 };
 
 const emptyForm: CreatePostForm = {
   recipient: "",
   type: "",
+  description: "",
 };
 
 const recipients: PostRecipient[] = [
@@ -122,6 +124,34 @@ export default function CreatePostModal({
                 ))}
               </div>
             </fieldset>
+
+            <div className="create-post-fieldset">
+              <label htmlFor="create-post-description">Descripción</label>
+              <textarea
+                id="create-post-description"
+                name="description"
+                placeholder="Contá cómo le fue hoy…"
+                value={form.description}
+                onChange={(event) => setForm({ ...form, description: event.target.value })}
+              />
+            </div>
+
+            <div className="create-post-fieldset">
+              <span>Fotos</span>
+              <div className="create-post-photos">
+                <div className="create-post-photo-placeholder" aria-label="Sin foto seleccionada">
+                  <svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <circle cx="9" cy="9" r="2" />
+                    <path d="m21 15-3.6-3.6a2 2 0 0 0-2.8 0L6 21" />
+                  </svg>
+                </div>
+                <button className="create-post-add-photo" type="button">
+                  <span aria-hidden="true">+</span>
+                  Agregar
+                </button>
+              </div>
+            </div>
           </div>
         </form>
       </section>
