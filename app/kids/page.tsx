@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useRef, useState, type MouseEvent } from "react";
 import Link from "next/link";
 import { kids } from "./data";
 
@@ -33,10 +33,11 @@ function UsersIcon() {
 export default function KidsPage() {
   const [isAddKidModalOpen, setIsAddKidModalOpen] = useState(false);
   const [, setAddKidForm] = useState<AddKidForm>(initialAddKidForm);
+  const addKidButtonRef = useRef<HTMLButtonElement>(null);
 
-  function handleAddKidModalToggle(event: React.MouseEvent<HTMLAnchorElement>) {
+  function handleOpenAddKidModal(event: MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
-    setIsAddKidModalOpen((isOpen) => !isOpen);
+    setIsAddKidModalOpen(true);
     setAddKidForm({ ...initialAddKidForm });
   }
 
@@ -105,12 +106,12 @@ export default function KidsPage() {
               <p className="eyebrow">GESTIÓN</p>
               <h1>Niños</h1>
             </div>
-            <a className="add-kid-link" href="#" onClick={handleAddKidModalToggle}>
+            <button className="add-kid-link" type="button" ref={addKidButtonRef} onClick={handleOpenAddKidModal}>
               <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
                 <path d="M12 5v14M5 12h14" />
               </svg>
               Agregar niño
-            </a>
+            </button>
           </header>
 
           <div className="kids-search">
