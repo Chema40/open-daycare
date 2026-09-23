@@ -1,5 +1,24 @@
+'use client';
+
+import { useState } from "react";
 import Link from "next/link";
 import { kids } from "./data";
+
+type AddKidForm = {
+  fullName: string;
+  birthDate: string;
+  room: "Soles" | "Planetas" | "Cometas";
+  allergies: string;
+  medicalNotes: string;
+};
+
+const initialAddKidForm: AddKidForm = {
+  fullName: "",
+  birthDate: "",
+  room: "Soles",
+  allergies: "",
+  medicalNotes: "",
+};
 
 function UsersIcon() {
   return (
@@ -12,8 +31,17 @@ function UsersIcon() {
 }
 
 export default function KidsPage() {
+  const [isAddKidModalOpen, setIsAddKidModalOpen] = useState(false);
+  const [, setAddKidForm] = useState<AddKidForm>(initialAddKidForm);
+
+  function handleAddKidModalToggle(event: React.MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+    setIsAddKidModalOpen((isOpen) => !isOpen);
+    setAddKidForm({ ...initialAddKidForm });
+  }
+
   return (
-    <div className="app-shell">
+    <div className="app-shell" data-add-kid-modal-open={isAddKidModalOpen}>
       <aside className="sidebar" aria-label="Navegación principal">
         <Link className="brand" href="/" aria-label="Ir al inicio de OpenDayCare">
           <span className="brand-mark" aria-hidden="true" />
@@ -77,7 +105,7 @@ export default function KidsPage() {
               <p className="eyebrow">GESTIÓN</p>
               <h1>Niños</h1>
             </div>
-            <a className="add-kid-link" href="#">
+            <a className="add-kid-link" href="#" onClick={handleAddKidModalToggle}>
               <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
                 <path d="M12 5v14M5 12h14" />
               </svg>
