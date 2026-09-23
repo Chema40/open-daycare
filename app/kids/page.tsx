@@ -12,6 +12,8 @@ type AddKidForm = {
   medicalNotes: string;
 };
 
+type AddKidErrors = Partial<Record<keyof AddKidForm, string>>;
+
 const initialAddKidForm: AddKidForm = {
   fullName: "",
   birthDate: "",
@@ -33,22 +35,79 @@ function UsersIcon() {
 export default function KidsPage() {
   const [isAddKidModalOpen, setIsAddKidModalOpen] = useState(false);
   const [addKidForm, setAddKidForm] = useState<AddKidForm>(initialAddKidForm);
-  const [addKidErrors] = useState<Record<string, string>>({});
+  const [addKidErrors, setAddKidErrors] = useState<AddKidErrors>({});
   const addKidButtonRef = useRef<HTMLButtonElement>(null);
 
   function handleOpenAddKidModal(event: MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
     setIsAddKidModalOpen(true);
     setAddKidForm({ ...initialAddKidForm });
+    setAddKidErrors({});
   }
 
   function handleCloseAddKidModal() {
     setIsAddKidModalOpen(false);
     setAddKidForm({ ...initialAddKidForm });
+    setAddKidErrors({});
   }
 
   function handleAddKidSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    const errors: AddKidErrors = {};
+    const fullName = addKidForm.fullName.trim();
+
+    if (!fullName) {
+      errors.fullName = "Escribe el nombre completo.";
+    }
+
+    if (!["Soles", "Planetas", "Cometas"].includes(addKidForm.room)) {
+      errors.room = "Selecciona una sala válida.";
+    }
+
+    const dateParts = addKidForm.birthDate.split("/");
+    const [day, month, year] = dateParts.map(Number);
+    const parsedDate = new Date(year, month - 1, day);
+    const isRealDate =
+      dateParts.length === 3 &&
+      dateParts[0].length === 2 &&
+      dateParts[1].length === 2 &&
+      dateParts[2].length === 4 &&
+      Number.isInteger(day) &&
+      Number.isInteger(month) &&
+      Number.isInteger(year) &&
+      parsedDate.getFullYear() === year &&
+      parsedDate.getMonth() === month - 1 &&
+      parsedDate.getDate() === day;
+
+    if (!isRealDate) {
+      errors.birthDate = "Introduce una fecha real con formato DD/MM/AAAA.";
+    } else {
+      const today = new Date();
+      const isFutureDate =
+        year > today.getFullYear() ||
+        (year === today.getFullYear() && month > today.getMonth() + 1) ||
+        (year === today.getFullYear() && month === today.getMonth() + 1 && day > today.getDate());
+
+      if (isFutureDate) {
+        errors.birthDate = "La fecha de nacimiento no puede ser futura.";
+      }
+    }
+
+    setAddKidErrors(errors);
+
+    if (!Object.keys(errors).length) {
+      handleCloseAddKidModal();
+    }
+  }
+
+  function handleBirthDateChange(value: string) {
+    const digits = value.replace(/\D/g, "").slice(0, 8);
+    const maskedValue = [digits.slice(0, 2), digits.slice(2, 4), digits.slice(4, 8)]
+      .filter(Boolean)
+      .join("/");
+
+    setAddKidForm({ ...addKidForm, birthDate: maskedValue });
   }
 
   return (
@@ -164,7 +223,7 @@ export default function KidsPage() {
       {isAddKidModalOpen ? (
         <div className="add-kid-modal-overlay">
           <section className="add-kid-modal" role="dialog" aria-modal="true" aria-labelledby="add-kid-title" aria-describedby="add-kid-description">
-            <form onSubmit={handleAddKidSubmit}>
+            <form noValidate onSubmit={handleAddKidSubmit}>
               <header className="add-kid-modal-header">
                 <button className="add-kid-modal-cancel" type="button" onClick={handleCloseAddKidModal}>
                   Cancelar
@@ -206,7 +265,7 @@ export default function KidsPage() {
                       inputMode="numeric"
                       placeholder="DD/MM/AAAA"
                       value={addKidForm.birthDate}
-                      onChange={(event) => setAddKidForm({ ...addKidForm, birthDate: event.target.value })}
+                      onChange={(event) => handleBirthDateChange(event.target.value)}
                       required
                       aria-invalid={Boolean(addKidErrors.birthDate)}
                       aria-describedby={addKidErrors.birthDate ? "add-kid-birth-date-error" : "add-kid-birth-date-description"}
