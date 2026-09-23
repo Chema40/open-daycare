@@ -40,6 +40,14 @@ a:focus-visible {
   outline-offset: 3px;
 }
 
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #4e72c8;
+  outline-offset: 2px;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -486,6 +494,7 @@ a:focus-visible {
   display: flex;
   align-items: center;
   gap: 8px;
+  border: 0;
   padding: 11px 18px;
   border-radius: 14px;
   background: linear-gradient(180deg, #f4977e, #ee8164);
@@ -493,6 +502,158 @@ a:focus-visible {
   color: #fff;
   font-size: 14.5px;
   font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.add-kid-modal-overlay {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 40px 24px;
+  background: rgb(63 54 46 / 28%);
+}
+
+.add-kid-modal {
+  width: 100%;
+  max-width: 520px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: #fbf4ec;
+  box-shadow: 0 20px 50px -24px rgb(63 54 46 / 55%);
+}
+
+.add-kid-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 26px;
+  border-bottom: 1px solid var(--border);
+}
+
+.add-kid-modal-header h2 {
+  margin: 0;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.add-kid-modal-cancel,
+.add-kid-modal-submit {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.add-kid-modal-cancel {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.add-kid-modal-submit {
+  color: #d9583c;
+  font-weight: 800;
+}
+
+.add-kid-modal-body {
+  padding: 24px 26px;
+}
+
+.add-kid-modal-description {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.add-kid-field,
+.add-kid-field-row {
+  min-width: 0;
+}
+
+.add-kid-field {
+  margin-bottom: 18px;
+}
+
+.add-kid-field-row {
+  display: flex;
+  gap: 14px;
+}
+
+.add-kid-field-row > .add-kid-field {
+  flex: 1;
+}
+
+.add-kid-field label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
+.add-kid-field input,
+.add-kid-field select,
+.add-kid-field textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1.5px solid #eadfd0;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+}
+
+.add-kid-field input,
+.add-kid-field select {
+  height: 48px;
+  padding: 0 16px;
+}
+
+.add-kid-field textarea {
+  min-height: 90px;
+  padding: 13px 16px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.add-kid-field input::placeholder,
+.add-kid-field textarea::placeholder {
+  color: #b6a99b;
+}
+
+.add-kid-field-description,
+.add-kid-field-error {
+  margin: 6px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.add-kid-field-description {
+  color: var(--soft-muted);
+}
+
+.add-kid-field-error {
+  color: #b7433b;
+  font-weight: 700;
+}
+
+.add-kid-field input[aria-invalid="true"],
+.add-kid-field select[aria-invalid="true"] {
+  border-color: #c5503a;
 }
 
 .kids-search {
@@ -1020,6 +1181,27 @@ a:focus-visible {
   .add-kid-link {
     align-self: stretch;
     justify-content: center;
+  }
+
+  .add-kid-modal-overlay {
+    padding: 16px 12px;
+  }
+
+  .add-kid-modal {
+    border-radius: 20px;
+  }
+
+  .add-kid-modal-header {
+    padding: 18px;
+  }
+
+  .add-kid-modal-body {
+    padding: 20px 18px;
+  }
+
+  .add-kid-field-row {
+    flex-direction: column;
+    gap: 0;
   }
 
   .kids-grid {
