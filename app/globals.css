@@ -2087,6 +2087,67 @@ textarea:focus-visible {
   font-weight: 600;
 }
 
+.create-post-options .recipient-sofia {
+  background: #f4b8cc;
+  color: #c44a7a;
+}
+
+.create-post-options .recipient-benjamin {
+  background: #b9dec4;
+  color: #3e8b62;
+}
+
+.create-post-options .recipient-room {
+  display: none;
+}
+
+.create-post-options label.post-type-comida {
+  border-color: #9a7b1e;
+  background: #9a7b1e;
+  color: #fff;
+}
+
+.create-post-options label.post-type-siesta {
+  border-color: #e7dcf6;
+  background: #e7dcf6;
+  color: #7b5fc0;
+}
+
+.create-post-options label.post-type-actividad {
+  border-color: #2e89a6;
+  background: #2e89a6;
+  color: #fff;
+}
+
+.create-post-options label.post-type-logro {
+  border-color: #cfebd8;
+  background: #cfebd8;
+  color: #3e9b6c;
+}
+
+.create-post-options label.post-type-ánimo {
+  border-color: #f9d2de;
+  background: #f9d2de;
+  color: #c56486;
+}
+
+.create-post-options label.post-type-foto {
+  border-color: #fbd8cc;
+  background: #fbd8cc;
+  color: #d9684a;
+}
+
+.create-post-options label.post-type-anuncio {
+  border-color: #ccd8f4;
+  background: #ccd8f4;
+  color: #4e72c8;
+}
+
+.create-post-options label.post-type-comida:has(input:checked),
+.create-post-options label.post-type-actividad:has(input:checked) {
+  border-color: var(--text);
+}
+
 .create-post-options label:last-child {
   padding-right: 16px;
   padding-left: 16px;

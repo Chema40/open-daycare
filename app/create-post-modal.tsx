@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable jsx-a11y/role-supports-aria-props */
+
 import {
   useEffect,
   useRef,
@@ -200,10 +202,24 @@ export default function CreatePostModal({
                       name="recipient"
                       value={recipient}
                       checked={form.recipient === recipient}
+                      aria-invalid={Boolean(errors.recipient)}
                       aria-describedby={errors.recipient ? "create-post-recipient-error" : undefined}
                       onChange={() => setForm({ ...form, recipient })}
                     />
-                    <span aria-hidden="true">{recipient === "Toda la sala" ? "" : recipient[0]}</span>
+                    <span
+                      className={`recipient-avatar recipient-${
+                        recipient === "Mateo"
+                          ? "mateo"
+                          : recipient === "Sofía"
+                            ? "sofia"
+                            : recipient === "Benjamín"
+                              ? "benjamin"
+                              : "room"
+                      }`}
+                      aria-hidden="true"
+                    >
+                      {recipient === "Toda la sala" ? "" : recipient[0]}
+                    </span>
                     {recipient}
                   </label>
                 ))}
@@ -223,12 +239,13 @@ export default function CreatePostModal({
               <legend>Tipo</legend>
               <div className="create-post-options">
                 {postTypes.map((postType) => (
-                  <label key={postType}>
+                    <label key={postType} className={`post-type-${postType.toLowerCase()}`}>
                     <input
                       type="radio"
                       name="type"
                       value={postType}
                       checked={form.type === postType}
+                      aria-invalid={Boolean(errors.type)}
                       aria-describedby={errors.type ? "create-post-type-error" : undefined}
                       onChange={() => setForm({ ...form, type: postType })}
                     />

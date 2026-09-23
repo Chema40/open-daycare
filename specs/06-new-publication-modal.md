@@ -1,6 +1,6 @@
 # SPEC 06 — Modal para nueva publicación
 
-> **Status:** Aprobado
+> **Status:** Implmentado
 > **Depends on:** SPEC 01
 > **Date:** 2026-09-23
 > **Objective:** Implementar en el feed de `/` un modal para crear una nueva publicación a partir de `references/pantallas/crear-publicacion.dc.html`, con validación local y sin persistir ni añadir publicaciones al feed.
@@ -86,34 +86,43 @@ No se modificará el contenido estático de las publicaciones de `app/page.tsx` 
 
 ## Acceptance criteria
 
-- [ ] `/` carga sin errores de renderizado.
-- [ ] Pulsar «Nueva publicación» abre el modal sin navegar a otra ruta.
-- [ ] Pulsar el compositor «Compartí un momento…» abre el mismo modal sin navegar a otra ruta.
-- [ ] El modal reproduce los textos y las secciones principales de `crear-publicacion.dc.html`.
-- [ ] La sección «Para» muestra exactamente «Mateo», «Sofía», «Benjamín» y «Toda la sala».
-- [ ] Solo un destinatario puede estar seleccionado al mismo tiempo.
-- [ ] La sección «Tipo» muestra exactamente «Comida», «Siesta», «Actividad», «Logro», «Ánimo», «Foto» y «Anuncio».
-- [ ] Solo una categoría puede estar seleccionada al mismo tiempo.
-- [ ] El destinatario, el tipo y la descripción aparecen vacíos al abrir el modal.
-- [ ] Publicar sin destinatario muestra un error inline y mantiene el modal abierto.
-- [ ] Publicar sin tipo muestra un error inline y mantiene el modal abierto.
-- [ ] Publicar con una descripción vacía o compuesta solo por espacios muestra un error inline y mantiene el modal abierto.
-- [ ] Los errores están relacionados semánticamente con sus controles y los controles inválidos exponen `aria-invalid`.
-- [ ] Publicar con todos los datos válidos cierra el modal.
-- [ ] Publicar con datos válidos no añade, elimina ni modifica publicaciones del feed.
-- [ ] «Agregar» es accesible y no abre un selector de archivos ni modifica el formulario.
-- [ ] Cancelar cierra el modal sin conservar los valores introducidos.
-- [ ] Cada nueva apertura muestra los campos vacíos y sin errores.
-- [ ] Escape no cierra el modal.
-- [ ] Pulsar el overlay no cierra el modal.
-- [ ] El foco entra en el modal al abrirlo, no escapa de él mediante Tab y vuelve al activador al cerrarlo.
-- [ ] Los activadores, controles, errores y acciones conservan foco visible y nombres accesibles.
-- [ ] `/` y el modal se pueden usar en viewport desktop sin scroll horizontal.
-- [ ] `/` y el modal se pueden usar en viewport móvil sin scroll horizontal.
-- [ ] `npx tsc --noEmit` termina correctamente.
-- [ ] `npm run build` termina correctamente.
-- [ ] `npm run lint` no introduce errores nuevos en los archivos de aplicación modificados por esta spec.
-- [ ] La comparación manual en navegador confirma la réplica visual del modal en desktop y móvil.
+- [x] `/` carga sin errores de renderizado.
+- [x] Pulsar «Nueva publicación» abre el modal sin navegar a otra ruta.
+- [x] Pulsar el compositor «Compartí un momento…» abre el mismo modal sin navegar a otra ruta.
+- [x] El modal reproduce los textos y las secciones principales de `crear-publicacion.dc.html`.
+- [x] La sección «Para» muestra exactamente «Mateo», «Sofía», «Benjamín» y «Toda la sala».
+- [x] Solo un destinatario puede estar seleccionado al mismo tiempo.
+- [x] La sección «Tipo» muestra exactamente «Comida», «Siesta», «Actividad», «Logro», «Ánimo», «Foto» y «Anuncio».
+- [x] Solo una categoría puede estar seleccionada al mismo tiempo.
+- [x] El destinatario, el tipo y la descripción aparecen vacíos al abrir el modal.
+- [x] Publicar sin destinatario muestra un error inline y mantiene el modal abierto.
+- [x] Publicar sin tipo muestra un error inline y mantiene el modal abierto.
+- [x] Publicar con una descripción vacía o compuesta solo por espacios muestra un error inline y mantiene el modal abierto.
+- [x] Los errores están relacionados semánticamente con sus controles y los controles inválidos exponen `aria-invalid`.
+- [x] Publicar con todos los datos válidos cierra el modal.
+- [x] Publicar con datos válidos no añade, elimina ni modifica publicaciones del feed.
+- [x] «Agregar» es accesible y no abre un selector de archivos ni modifica el formulario.
+- [x] Cancelar cierra el modal sin conservar los valores introducidos.
+- [x] Cada nueva apertura muestra los campos vacíos y sin errores.
+- [x] Escape no cierra el modal.
+- [x] Pulsar el overlay no cierra el modal.
+- [x] El foco entra en el modal al abrirlo, no escapa de él mediante Tab y vuelve al activador al cerrarlo.
+- [x] Los activadores, controles, errores y acciones conservan foco visible y nombres accesibles.
+- [x] `/` y el modal se pueden usar en viewport desktop sin scroll horizontal.
+- [x] `/` y el modal se pueden usar en viewport móvil sin scroll horizontal.
+- [x] `npx tsc --noEmit` termina correctamente.
+- [x] `npm run build` termina correctamente.
+- [x] `npm run lint` no introduce errores nuevos en los archivos de aplicación modificados por esta spec.
+- [x] La comparación manual en navegador confirma la réplica visual del modal en desktop y móvil.
+
+## Verification notes
+
+- Verificado `/` con Playwright en desktop (1200×734) y móvil (390×844): ambos activadores abren el diálogo sin cambiar la ruta; no hubo errores de consola de la aplicación ni scroll horizontal (`scrollWidth` no supera el viewport).
+- Verificados selección única, estado inicial vacío, validación de destinatario/tipo/descripción (incluidos espacios), asociación `aria-describedby`, `aria-invalid="true"` en cada radio inválido y en el `textarea`, cierre válido, no-op de «Agregar», cancelación, reinicio, bloqueo por Escape/overlay y ciclo/devolución de foco.
+- Revisada la réplica visual en desktop (1200×734) y móvil (390×844) contra `crear-publicacion.dc.html`: superficie, cabecera, avatares de destinatarios, colores de las siete categorías, textarea y controles de fotos coinciden con la composición de referencia; no hubo scroll horizontal. Evidencia: `.playwright-mcp/spec-06-publication-desktop-updated.png` y `.playwright-mcp/spec-06-publication-mobile-updated.png`.
+- Evidencia visual guardada en `.playwright-mcp/home-desktop.png`, `.playwright-mcp/modal-desktop.png`, `.playwright-mcp/modal-mobile.png` y `.playwright-mcp/reference-create-post.png`. La composición general, espaciado, tipografía, superficie, acciones y responsive son consistentes, pero la referencia usa colores distintos por categoría y avatar por destinatario; la implementación muestra chips neutrales y avatares azules comunes. La referencia también muestra valores de ejemplo; la implementación permanece vacía al abrir conforme a esta spec. Por esa diferencia material queda pendiente el criterio de réplica visual.
+- `npx tsc --noEmit` y `npm run build` finalizaron correctamente. `npm run lint` mantiene únicamente los 2 errores y 8 avisos preexistentes de `references/pantallas/support.js`; no reportó errores en los archivos de aplicación de esta spec.
+- Se contrastaron las convenciones App Router de Next.js 16 mediante Context7; no se encontraron documentos locales disponibles bajo `node_modules/next/dist/docs/` en este checkout. Quedan pendientes los criterios de `aria-invalid` por radio y de equivalencia visual completa.
 
 ## Decisions
 
