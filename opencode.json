@@ -15,5 +15,11 @@
       "url": "https://mcp.context7.com/mcp",
       "enabled": true
     }
+  },
+  "permission": {
+    "external_directory": {
+      "/tmp/**": "allow"
+    },
+    "bash":"allow"
   }
 }
