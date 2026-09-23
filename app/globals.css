@@ -1937,3 +1937,336 @@ textarea:focus-visible {
     font-size: 28px;
   }
 }
+
+.new-post-link,
+.composer {
+  border: 0;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.composer {
+  width: 100%;
+}
+
+.create-post-modal-overlay {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 40px 24px;
+  background: rgb(63 54 46 / 42%);
+}
+
+.create-post-modal {
+  width: 100%;
+  max-width: 580px;
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: #fbf4ec;
+  box-shadow: 0 20px 50px -24px rgb(63 54 46 / 55%);
+}
+
+.create-post-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 26px;
+  border-bottom: 1px solid var(--border);
+}
+
+.create-post-modal-header h2 {
+  margin: 0;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.create-post-modal-header button,
+.create-post-add-photo {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.create-post-modal-header button:last-child {
+  color: var(--coral-dark);
+  font-weight: 800;
+}
+
+.create-post-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px 26px 28px;
+}
+
+.create-post-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.create-post-fieldset legend,
+.create-post-fieldset > label,
+.create-post-fieldset > span {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
+.create-post-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.create-post-options label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 7px 14px 7px 7px;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: #6e6359;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.create-post-options label:has(input:checked) {
+  border-color: var(--text);
+  background: var(--text);
+  color: #fff;
+}
+
+.create-post-options label:has(input:focus-visible) {
+  outline: 3px solid #4e72c8;
+  outline-offset: 2px;
+}
+
+.create-post-options input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.create-post-options label > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #a9d9e8;
+  color: #1f7a93;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.create-post-options .recipient-sofia {
+  background: #f4b8cc;
+  color: #c44a7a;
+}
+
+.create-post-options .recipient-benjamin {
+  background: #b9dec4;
+  color: #3e8b62;
+}
+
+.create-post-options .recipient-room {
+  display: none;
+}
+
+.create-post-options label.post-type-comida {
+  border-color: #9a7b1e;
+  background: #9a7b1e;
+  color: #fff;
+}
+
+.create-post-options label.post-type-siesta {
+  border-color: #e7dcf6;
+  background: #e7dcf6;
+  color: #7b5fc0;
+}
+
+.create-post-options label.post-type-actividad {
+  border-color: #2e89a6;
+  background: #2e89a6;
+  color: #fff;
+}
+
+.create-post-options label.post-type-logro {
+  border-color: #cfebd8;
+  background: #cfebd8;
+  color: #3e9b6c;
+}
+
+.create-post-options label.post-type-ánimo {
+  border-color: #f9d2de;
+  background: #f9d2de;
+  color: #c56486;
+}
+
+.create-post-options label.post-type-foto {
+  border-color: #fbd8cc;
+  background: #fbd8cc;
+  color: #d9684a;
+}
+
+.create-post-options label.post-type-anuncio {
+  border-color: #ccd8f4;
+  background: #ccd8f4;
+  color: #4e72c8;
+}
+
+.create-post-options label.post-type-comida:has(input:checked),
+.create-post-options label.post-type-actividad:has(input:checked) {
+  border-color: var(--text);
+}
+
+.create-post-options label:last-child {
+  padding-right: 16px;
+  padding-left: 16px;
+}
+
+.create-post-fieldset textarea {
+  display: block;
+  width: 100%;
+  min-height: 120px;
+  padding: 14px 16px;
+  border: 1.5px solid #eadfd0;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.create-post-fieldset textarea::placeholder {
+  color: #b6a99b;
+}
+
+.create-post-photos {
+  display: flex;
+  gap: 12px;
+}
+
+.create-post-photo-placeholder,
+.create-post-add-photo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  border-radius: 14px;
+}
+
+.create-post-photo-placeholder {
+  flex: none;
+  border: 1px solid var(--border);
+  background: #f4ece1;
+  color: #cbb89f;
+}
+
+.create-post-add-photo {
+  flex-direction: column;
+  gap: 6px;
+  border: 1.5px dashed #dbcdba;
+  background: #f4ece1;
+  color: #b0a290;
+  font-size: 12px;
+}
+
+.create-post-add-photo span {
+  color: var(--coral-dark);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.create-post-fieldset p[role="alert"] {
+  margin: 7px 0 0;
+  color: #b7433b;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.create-post-fieldset[aria-invalid="true"] .create-post-options label {
+  border-color: #c5503a;
+}
+
+.create-post-fieldset textarea[aria-invalid="true"] {
+  border-color: #c5503a;
+}
+
+@media (max-width: 800px) {
+  .create-post-modal-overlay {
+    padding: 24px 16px;
+  }
+
+  .create-post-modal {
+    max-height: calc(100vh - 48px);
+  }
+}
+
+@media (max-width: 520px) {
+  .create-post-modal-overlay {
+    padding: 16px 10px;
+  }
+
+  .create-post-modal {
+    max-height: calc(100vh - 32px);
+    border-radius: 20px;
+  }
+
+  .create-post-modal-header {
+    padding: 18px;
+  }
+
+  .create-post-modal-body {
+    gap: 18px;
+    padding: 20px 18px 22px;
+  }
+
+  .create-post-options {
+    gap: 6px;
+  }
+
+  .create-post-options label {
+    padding-right: 9px;
+    padding-left: 5px;
+    font-size: 13px;
+  }
+
+  .create-post-options label:last-child {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+}
