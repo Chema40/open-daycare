@@ -1,6 +1,18 @@
+"use client";
+
+import { useRef, useState, type MouseEvent } from "react";
 import Link from "next/link";
+import CreatePostModal from "@/app/create-post-modal";
 
 export default function Home() {
+  const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
+  const createPostTriggerRef = useRef<HTMLElement | null>(null);
+
+  const openCreatePost = (event: MouseEvent<HTMLButtonElement>) => {
+    createPostTriggerRef.current = event.currentTarget;
+    setIsCreatePostOpen(true);
+  };
+
   return (
     <div className="app-shell">
       <aside className="sidebar" aria-label="Navegación principal">
@@ -12,12 +24,12 @@ export default function Home() {
           </span>
         </a>
 
-        <a className="new-post-link" href="#">
+        <button className="new-post-link" type="button" onClick={openCreatePost}>
           <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
             <path d="M12 5v14M5 12h14" />
           </svg>
           Nueva publicación
-        </a>
+        </button>
 
         <nav className="main-nav" aria-label="Secciones de OpenDayCare">
           <a className="nav-link is-active" href="#" aria-current="page">
@@ -71,7 +83,7 @@ export default function Home() {
             <p className="feed-date">12 niños · martes 17 jun</p>
           </header>
 
-          <a className="composer" href="#" aria-label="Crear una nueva publicación">
+          <button className="composer" type="button" onClick={openCreatePost} aria-label="Crear una nueva publicación">
             <span className="composer-avatar" aria-hidden="true">C</span>
             <span className="composer-placeholder">Compartí un momento…</span>
             <span className="composer-action" aria-hidden="true">
@@ -80,7 +92,7 @@ export default function Home() {
                 <circle cx="12" cy="13" r="4" />
               </svg>
             </span>
-          </a>
+          </button>
 
           <div className="feed-divider">
             <span>PUBLICADO HOY</span>
@@ -198,6 +210,12 @@ export default function Home() {
           </section>
         </div>
       </main>
+
+      <CreatePostModal
+        isOpen={isCreatePostOpen}
+        onClose={() => setIsCreatePostOpen(false)}
+        originRef={createPostTriggerRef}
+      />
     </div>
   );
 }
