@@ -1,6 +1,6 @@
 # SPEC 03 — Login y activación de cuenta
 
-> **Status:** Aprovado
+> **Status:** Implementado
 > **Depends on:** SPEC 01
 > **Date:** 2026-09-23
 > **Objective:** Implementar las pantallas estáticas responsive de login y activación de cuenta a partir de las referencias proporcionadas, sin navbar ni autenticación real.
@@ -46,23 +46,31 @@ This feature introduces no new data structures. It renders fixed presentation da
 
 ## Acceptance criteria
 
-- [ ] La ruta `/login` carga sin errores de renderizado.
-- [ ] La ruta `/activate-account` carga sin errores de renderizado.
-- [ ] Ninguna de las dos pantallas muestra el navbar o la navegación lateral del home.
-- [ ] El login reproduce el panel visual izquierdo, la marca OpenDayCare y el formulario de la referencia.
-- [ ] El login no muestra las opciones Personal ni Familia ni ningún selector equivalente.
-- [ ] El login conserva los campos de email y contraseña, el enlace de recuperación y el botón de inicio de sesión.
-- [ ] La activación reproduce la bienvenida, la invitación a Mateo en Sala Soles, los campos y el consentimiento de la referencia.
-- [ ] El consentimiento de fotos aparece visualmente marcado y no implementa lógica funcional.
-- [ ] Los textos, valores de ejemplo, colores, tipografías, bordes, sombras y espaciado son visualmente equivalentes a las referencias.
-- [ ] Todos los enlaces y acciones de ambas pantallas usan destinos inertes y no intentan autenticar, validar ni persistir datos.
-- [ ] Las dos pantallas se pueden usar en viewport desktop sin scroll horizontal.
-- [ ] Las dos pantallas se pueden usar en viewport móvil sin scroll horizontal.
-- [ ] Los elementos interactivos tienen nombres accesibles y foco de teclado visible.
-- [ ] `npx tsc --noEmit` termina correctamente.
-- [ ] `npm run build` termina correctamente.
-- [ ] `npm run lint` no introduce errores nuevos en los archivos de aplicación modificados por esta spec.
-- [ ] La comparación manual en navegador confirma la réplica visual de `/login` y `/activate-account` en desktop y móvil.
+- [x] La ruta `/login` carga sin errores de renderizado.
+- [x] La ruta `/activate-account` carga sin errores de renderizado.
+- [x] Ninguna de las dos pantallas muestra el navbar o la navegación lateral del home.
+- [x] El login reproduce el panel visual izquierdo, la marca OpenDayCare y el formulario de la referencia.
+- [x] El login no muestra las opciones Personal ni Familia ni ningún selector equivalente.
+- [x] El login conserva los campos de email y contraseña, el enlace de recuperación y el botón de inicio de sesión.
+- [x] La activación reproduce la bienvenida, la invitación a Mateo en Sala Soles, los campos y el consentimiento de la referencia.
+- [x] El consentimiento de fotos aparece visualmente marcado y no implementa lógica funcional.
+- [x] Los textos, valores de ejemplo, colores, tipografías, bordes, sombras y espaciado son visualmente equivalentes a las referencias.
+- [x] Todos los enlaces y acciones de ambas pantallas usan destinos inertes y no intentan autenticar, validar ni persistir datos.
+- [x] Las dos pantallas se pueden usar en viewport desktop sin scroll horizontal.
+- [x] Las dos pantallas se pueden usar en viewport móvil sin scroll horizontal.
+- [x] Los elementos interactivos tienen nombres accesibles y foco de teclado visible.
+- [x] `npx tsc --noEmit` termina correctamente.
+- [x] `npm run build` termina correctamente.
+- [x] `npm run lint` no introduce errores nuevos en los archivos de aplicación modificados por esta spec.
+- [x] La comparación manual en navegador confirma la réplica visual de `/login` y `/activate-account` en desktop y móvil.
+
+## Verification notes
+
+- Verificado con `npx tsc --noEmit`, `npm run build` y `npm run lint`. TypeScript y build terminan correctamente. Lint conserva únicamente los 2 errores legacy de `references/pantallas/support.js` y sus warnings documentados; no hay errores en los archivos de aplicación de esta spec.
+- Playwright revisó `http://localhost:3000/login` y `http://localhost:3000/activate-account` en 1200×734 y 1440×900, y en móvil 390×844. Se capturaron snapshots, métricas y screenshots en `.playwright-mcp/`; no hubo errores de renderizado ni scroll horizontal. La consola solo mostró avisos de `autocomplete` ausente.
+- Se comprobaron nombres accesibles mediante snapshot/labels y foco visible mediante navegación con teclado. Los enlaces y formularios usan `#` y permanecen inertes.
+- La comparación con `references/pantallas/login.dc.html` y `references/pantallas/activar-cuenta.dc.html` confirma composición, espaciado, tipografía, paleta, bordes, sombras y responsive; el selector Personal/Familia se omite conforme a esta spec.
+- Corregido el pie del hero de `/login` para incluir `🌿 Guardería Sala Soles`, igual que la referencia.
 
 ## Decisions
 

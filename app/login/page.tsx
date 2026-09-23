@@ -24,7 +24,7 @@ export default function LoginPage() {
           <p>Publicá momentos, gestioná las salas y mantené a las familias cerca, desde un solo lugar.</p>
         </div>
 
-        <p className="login-hero-footer">Guardería Sala Soles</p>
+        <p className="login-hero-footer">🌿 Guardería Sala Soles</p>
       </section>
 
       <section className="login-form-panel" aria-labelledby="login-title">
