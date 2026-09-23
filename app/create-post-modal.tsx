@@ -1,6 +1,12 @@
 "use client";
 
-import { useState, type FormEvent, type RefObject } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type RefObject,
+} from "react";
 
 export type PostRecipient = "Mateo" | "Sofía" | "Benjamín" | "Toda la sala";
 
@@ -46,6 +52,9 @@ const postTypes: PostType[] = [
   "Anuncio",
 ];
 
+const focusableSelector =
+  'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
 export type CreatePostModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -59,12 +68,71 @@ export default function CreatePostModal({
 }: CreatePostModalProps) {
   const [form, setForm] = useState<CreatePostForm>(emptyForm);
   const [errors, setErrors] = useState<CreatePostErrors>({});
+  const modalRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const modal = modalRef.current;
+    const origin = originRef?.current;
+
+    if (!modal) {
+      return;
+    }
+
+    const getFocusableElements = () =>
+      Array.from(modal.querySelectorAll<HTMLElement>(focusableSelector));
+
+    getFocusableElements()[0]?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        return;
+      }
+
+      if (event.key !== "Tab") {
+        return;
+      }
+
+      const focusableElements = getFocusableElements();
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+      const activeElement = document.activeElement;
+
+      if (!firstElement || !lastElement) {
+        event.preventDefault();
+        return;
+      }
+
+      if (
+        event.shiftKey &&
+        (activeElement === firstElement || !modal.contains(activeElement))
+      ) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (
+        !event.shiftKey &&
+        (activeElement === lastElement || !modal.contains(activeElement))
+      ) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      origin?.focus();
+    };
+  }, [isOpen, originRef]);
 
   if (!isOpen) {
     return null;
   }
-
-  void originRef;
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -102,6 +170,7 @@ export default function CreatePostModal({
   return (
     <div className="create-post-modal-overlay">
       <section
+        ref={modalRef}
         className="create-post-modal"
         role="dialog"
         aria-modal="true"
