@@ -41,6 +41,7 @@ export default function LinkParentModal({
   const [verificationError, setVerificationError] = useState("");
   const [resendMessage, setResendMessage] = useState("");
   const [confirmationVisible, setConfirmationVisible] = useState(false);
+  const dialogRef = useRef<HTMLElement>(null);
   const confirmationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const resendTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -62,7 +63,47 @@ export default function LinkParentModal({
   }
 
   useEffect(() => {
+    if (!isOpen || !dialogRef.current) {
+      return;
+    }
+
+    const dialog = dialogRef.current;
+    const focusableSelector =
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const firstInput = dialog.querySelector<HTMLElement>(
+      'input:not([disabled]), select:not([disabled]), textarea:not([disabled])',
+    );
+    const focusableElements = () =>
+      Array.from(dialog.querySelectorAll<HTMLElement>(focusableSelector));
+
+    (firstInput ?? dialog.querySelector<HTMLElement>(focusableSelector))?.focus();
+
+    function trapFocus(event: KeyboardEvent) {
+      if (event.key !== "Tab") {
+        return;
+      }
+
+      const elements = focusableElements();
+      if (!elements.length) {
+        return;
+      }
+
+      const firstElement = elements[0];
+      const lastElement = elements[elements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    }
+
+    document.addEventListener("keydown", trapFocus);
+
     return () => {
+      document.removeEventListener("keydown", trapFocus);
       if (confirmationTimeoutRef.current) {
         clearTimeout(confirmationTimeoutRef.current);
       }
@@ -70,7 +111,7 @@ export default function LinkParentModal({
         clearTimeout(resendTimeoutRef.current);
       }
     };
-  }, []);
+  }, [isOpen, step]);
 
   function validateForm() {
     const nextErrors: LinkParentErrors = {};
@@ -133,6 +174,7 @@ export default function LinkParentModal({
   return (
     <div className="link-parent-modal-overlay">
       <section
+        ref={dialogRef}
         className="link-parent-modal"
         role="dialog"
         aria-modal="true"
@@ -302,11 +344,18 @@ export function LinkParentTrigger({
   hasLinkedParents,
 }: LinkParentTriggerProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const triggerLabel = hasLinkedParents ? "Vincular otro padre" : "Vincular padre";
+
+  function handleClose() {
+    setIsOpen(false);
+    requestAnimationFrame(() => triggerRef.current?.focus());
+  }
 
   return (
     <>
       <button
+        ref={triggerRef}
         className="link-parent"
         type="button"
         onClick={() => setIsOpen(true)}
@@ -331,7 +380,7 @@ export function LinkParentTrigger({
       <LinkParentModal
         childName={childName}
         isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
+        onClose={handleClose}
       />
     </>
   );
