@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 
 type LinkParentForm = {
   name: string;
@@ -9,6 +9,8 @@ type LinkParentForm = {
 };
 
 type LinkParentStep = "form" | "verification";
+
+type LinkParentErrors = Partial<Record<keyof LinkParentForm, string>>;
 
 type LinkParentModalProps = {
   childName: string;
@@ -29,11 +31,39 @@ export default function LinkParentModal({
 }: LinkParentModalProps) {
   const [form, setForm] = useState<LinkParentForm>(initialForm);
   const [step, setStep] = useState<LinkParentStep>("form");
+  const [errors, setErrors] = useState<LinkParentErrors>({});
 
   function handleClose() {
     setForm(initialForm);
     setStep("form");
+    setErrors({});
     onClose();
+  }
+
+  function validateForm() {
+    const nextErrors: LinkParentErrors = {};
+
+    if (!form.name.trim()) {
+      nextErrors.name = "Indica el nombre del padre o madre.";
+    }
+
+    if (!form.email.trim()) {
+      nextErrors.email = "Indica un email.";
+    } else if (!/^\S+@\S+\.\S+$/.test(form.email)) {
+      nextErrors.email = "Introduce un email válido.";
+    }
+
+    if (!form.relationship) {
+      nextErrors.relationship = "Selecciona un parentesco.";
+    }
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    validateForm();
   }
 
   if (!isOpen) {
@@ -60,17 +90,94 @@ export default function LinkParentModal({
 
         <form
           className="link-parent-modal-content"
-          onSubmit={(event) => event.preventDefault()}
+          onSubmit={handleSubmit}
+          noValidate
+          data-step={step}
         >
           <p>
-            {step === "form"
-              ? "Completa los datos para enviar una invitación."
-              : "Introduce el código de verificación enviado por email."}
+            Completa los datos para enviar una invitación.
           </p>
 
-          <output aria-live="polite" hidden>
-            {form.name} {form.email} {form.relationship}
-          </output>
+          <div className="link-parent-field">
+            <label htmlFor="link-parent-name">Nombre del padre/madre</label>
+            <input
+              id="link-parent-name"
+              name="name"
+              type="text"
+              value={form.name}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, name: event.target.value }))
+              }
+              aria-invalid={Boolean(errors.name)}
+              aria-describedby={errors.name ? "link-parent-name-error" : undefined}
+              required
+              placeholder="Ej. Diego Fernández"
+            />
+            {errors.name && (
+              <p id="link-parent-name-error" className="link-parent-error" role="alert">
+                {errors.name}
+              </p>
+            )}
+          </div>
+
+          <div className="link-parent-field">
+            <label htmlFor="link-parent-email">Email</label>
+            <input
+              id="link-parent-email"
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, email: event.target.value }))
+              }
+              aria-invalid={Boolean(errors.email)}
+              aria-describedby={errors.email ? "link-parent-email-error" : undefined}
+              required
+              placeholder="correo@ejemplo.com"
+            />
+            {errors.email && (
+              <p id="link-parent-email-error" className="link-parent-error" role="alert">
+                {errors.email}
+              </p>
+            )}
+          </div>
+
+          <fieldset
+            className="link-parent-field link-parent-relationship"
+            aria-describedby={errors.relationship ? "link-parent-relationship-error" : undefined}
+          >
+            <legend>Parentesco</legend>
+            <div className="link-parent-relationship-options">
+              {(["Mamá", "Papá", "Tutor/a"] as const).map((relationship) => (
+                <label key={relationship}>
+                  <input
+                    type="radio"
+                    name="relationship"
+                    value={relationship}
+                    checked={form.relationship === relationship}
+                    onChange={() =>
+                      setForm((current) => ({ ...current, relationship }))
+                    }
+                    required={relationship === "Mamá"}
+                  />
+                  <span>{relationship}</span>
+                </label>
+              ))}
+            </div>
+            {errors.relationship && (
+              <p id="link-parent-relationship-error" className="link-parent-error" role="alert">
+                {errors.relationship}
+              </p>
+            )}
+          </fieldset>
+
+          <div className="link-parent-invitation-code">
+            <span>Código de invitación</span>
+            <strong>7K4P9</strong>
+            <small>Vence en 7 días</small>
+          </div>
+
+          <button type="submit">Enviar invitación</button>
         </form>
       </section>
     </div>
