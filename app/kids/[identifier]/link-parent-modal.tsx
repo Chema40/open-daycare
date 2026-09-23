@@ -18,6 +18,11 @@ type LinkParentModalProps = {
   onClose: () => void;
 };
 
+type LinkParentTriggerProps = {
+  childName: string;
+  hasLinkedParents: boolean;
+};
+
 const initialForm: LinkParentForm = {
   name: "",
   email: "",
@@ -289,5 +294,45 @@ export default function LinkParentModal({
         )}
       </section>
     </div>
+  );
+}
+
+export function LinkParentTrigger({
+  childName,
+  hasLinkedParents,
+}: LinkParentTriggerProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const triggerLabel = hasLinkedParents ? "Vincular otro padre" : "Vincular padre";
+
+  return (
+    <>
+      <button
+        className="link-parent"
+        type="button"
+        onClick={() => setIsOpen(true)}
+        aria-haspopup="dialog"
+        aria-expanded={isOpen}
+      >
+        <span className="link-parent-icon" aria-hidden="true">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+          >
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+        </span>
+        {triggerLabel}
+      </button>
+      <LinkParentModal
+        childName={childName}
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+      />
+    </>
   );
 }
