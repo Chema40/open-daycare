@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import Link from "next/link";
 import { kids } from "./data";
 
@@ -37,9 +37,12 @@ export default function KidsPage() {
   const [addKidForm, setAddKidForm] = useState<AddKidForm>(initialAddKidForm);
   const [addKidErrors, setAddKidErrors] = useState<AddKidErrors>({});
   const addKidButtonRef = useRef<HTMLButtonElement>(null);
+  const addKidDialogRef = useRef<HTMLElement>(null);
+  const lastFocusedElementRef = useRef<HTMLElement | null>(null);
 
   function handleOpenAddKidModal(event: MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
+    lastFocusedElementRef.current = addKidButtonRef.current;
     setIsAddKidModalOpen(true);
     setAddKidForm({ ...initialAddKidForm });
     setAddKidErrors({});
@@ -100,6 +103,64 @@ export default function KidsPage() {
       handleCloseAddKidModal();
     }
   }
+
+  useEffect(() => {
+    if (!isAddKidModalOpen) {
+      lastFocusedElementRef.current?.focus();
+      return;
+    }
+
+    const dialog = addKidDialogRef.current;
+
+    if (!dialog) {
+      return;
+    }
+
+    const currentDialog = dialog;
+
+    const getFocusableElements = () =>
+      Array.from(
+        currentDialog.querySelectorAll<HTMLElement>(
+          'button, input, select, textarea, [href], [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((element) => !element.hasAttribute("disabled"));
+
+    const focusableElements = getFocusableElements();
+    focusableElements[0]?.focus();
+
+    function handleDialogKeyDown(event: KeyboardEvent) {
+      if (event.key !== "Tab") {
+        return;
+      }
+
+      const currentFocusableElements = getFocusableElements();
+      const firstElement = currentFocusableElements[0];
+      const lastElement = currentFocusableElements[currentFocusableElements.length - 1];
+      const currentElement = document.activeElement as HTMLElement | null;
+
+      if (!firstElement || !lastElement) {
+        event.preventDefault();
+        return;
+      }
+
+      if (!currentDialog.contains(currentElement)) {
+        event.preventDefault();
+        (event.shiftKey ? lastElement : firstElement).focus();
+      } else if (event.shiftKey && currentElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && currentElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    }
+
+    document.addEventListener("keydown", handleDialogKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleDialogKeyDown);
+    };
+  }, [isAddKidModalOpen]);
 
   function handleBirthDateChange(value: string) {
     const digits = value.replace(/\D/g, "").slice(0, 8);
@@ -222,7 +283,7 @@ export default function KidsPage() {
 
       {isAddKidModalOpen ? (
         <div className="add-kid-modal-overlay">
-          <section className="add-kid-modal" role="dialog" aria-modal="true" aria-labelledby="add-kid-title" aria-describedby="add-kid-description">
+          <section ref={addKidDialogRef} className="add-kid-modal" role="dialog" aria-modal="true" aria-labelledby="add-kid-title" aria-describedby="add-kid-description">
             <form noValidate onSubmit={handleAddKidSubmit}>
               <header className="add-kid-modal-header">
                 <button className="add-kid-modal-cancel" type="button" onClick={handleCloseAddKidModal}>
