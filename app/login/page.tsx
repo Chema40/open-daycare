@@ -32,7 +32,7 @@ export default function LoginPage() {
           <h2 id="login-title">Iniciar sesión</h2>
           <p className="login-subtitle">Ingresá para ver el día de hoy.</p>
 
-          <form className="login-form">
+          <form className="login-form" action="#">
             <div className="login-field">
               <label htmlFor="email">Email</label>
               <input id="email" name="email" type="email" defaultValue="caro@opendaycare.com" />
