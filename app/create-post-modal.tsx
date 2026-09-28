@@ -9,8 +9,9 @@ import {
   type FormEvent,
   type RefObject,
 } from "react";
+import { kids } from "@/app/kids/data";
 
-export type PostRecipient = "Mateo" | "Sofía" | "Benjamín" | "Toda la sala";
+export type PostRecipient = number | "room";
 
 export type PostType =
   | "Comida"
@@ -22,7 +23,7 @@ export type PostType =
   | "Anuncio";
 
 export type CreatePostForm = {
-  recipient: PostRecipient | "";
+  recipient: PostRecipient[];
   type: PostType | "";
   description: string;
 };
@@ -32,17 +33,10 @@ export type CreatePostErrors = Partial<
 >;
 
 const emptyForm: CreatePostForm = {
-  recipient: "",
+  recipient: [],
   type: "",
   description: "",
 };
-
-const recipients: PostRecipient[] = [
-  "Mateo",
-  "Sofía",
-  "Benjamín",
-  "Toda la sala",
-];
 
 const postTypes: PostType[] = [
   "Comida",
@@ -141,7 +135,7 @@ export default function CreatePostModal({
 
     const nextErrors: CreatePostErrors = {};
 
-    if (!form.recipient) {
+    if (form.recipient.length === 0) {
       nextErrors.recipient = "Elegí un destinatario.";
     }
 
@@ -167,6 +161,28 @@ export default function CreatePostModal({
     setForm(emptyForm);
     setErrors({});
     onClose();
+  };
+
+  const handleRecipientChange = (recipient: PostRecipient) => {
+    setForm((currentForm) => {
+      if (recipient === "room") {
+        return {
+          ...currentForm,
+          recipient: currentForm.recipient.includes("room") ? [] : ["room"],
+        };
+      }
+
+      const nextRecipients = currentForm.recipient.filter(
+        (selectedRecipient) => selectedRecipient !== "room",
+      );
+
+      return {
+        ...currentForm,
+        recipient: nextRecipients.includes(recipient)
+          ? nextRecipients.filter((selectedRecipient) => selectedRecipient !== recipient)
+          : [...nextRecipients, recipient],
+      };
+    });
   };
 
   return (
@@ -195,34 +211,40 @@ export default function CreatePostModal({
             >
               <legend>Para</legend>
               <div className="create-post-options">
-                {recipients.map((recipient) => (
-                  <label key={recipient}>
+                {kids.map((kid) => (
+                  <label key={kid.id}>
                     <input
-                      type="radio"
+                      type="checkbox"
                       name="recipient"
-                      value={recipient}
-                      checked={form.recipient === recipient}
+                      value={kid.id}
+                      checked={form.recipient.includes(kid.id)}
                       aria-invalid={Boolean(errors.recipient)}
                       aria-describedby={errors.recipient ? "create-post-recipient-error" : undefined}
-                      onChange={() => setForm({ ...form, recipient })}
+                      onChange={() => handleRecipientChange(kid.id)}
                     />
                     <span
-                      className={`recipient-avatar recipient-${
-                        recipient === "Mateo"
-                          ? "mateo"
-                          : recipient === "Sofía"
-                            ? "sofia"
-                            : recipient === "Benjamín"
-                              ? "benjamin"
-                              : "room"
-                      }`}
+                      className="recipient-avatar"
+                      style={{ backgroundColor: kid.avatarColor, color: kid.avatarTextColor }}
                       aria-hidden="true"
                     >
-                      {recipient === "Toda la sala" ? "" : recipient[0]}
+                      {kid.initial}
                     </span>
-                    {recipient}
+                    {kid.name}
                   </label>
                 ))}
+                <label>
+                  <input
+                    type="checkbox"
+                    name="recipient"
+                    value="room"
+                    checked={form.recipient.includes("room")}
+                    aria-invalid={Boolean(errors.recipient)}
+                    aria-describedby={errors.recipient ? "create-post-recipient-error" : undefined}
+                    onChange={() => handleRecipientChange("room")}
+                  />
+                  <span className="recipient-avatar recipient-room" aria-hidden="true" />
+                  Toda la sala
+                </label>
               </div>
               {errors.recipient && (
                 <p id="create-post-recipient-error" role="alert">
@@ -239,7 +261,7 @@ export default function CreatePostModal({
               <legend>Tipo</legend>
               <div className="create-post-options">
                 {postTypes.map((postType) => (
-                    <label key={postType} className={`post-type-${postType.toLowerCase()}`}>
+                  <label key={postType} className={`post-type-${postType.toLowerCase()}`}>
                     <input
                       type="radio"
                       name="type"
