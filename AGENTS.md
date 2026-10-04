@@ -24,6 +24,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Use the `supabase-postgres-best-practices` skill before writing or changing PostgreSQL queries, schemas, migrations, indexes, triggers, functions, RLS policies, connection settings, or performance diagnostics.
 - Supabase changes frequently; verify the current changelog and official documentation before implementing features or relying on API, CLI, MCP, or configuration behavior.
 - Verify Supabase changes with a test query or equivalent check. If an approach fails after two or three attempts, stop retrying and inspect the error, documentation, and relevant logs.
+- Siempre consultar y tomar como referencia la tabla o historial de migraciones antes de manipular la base de datos, y volver a comprobarlo después para confirmar la migración aplicada y evitar conflictos de historial.
 - Enable RLS on every table in an exposed schema and write policies for the actual access model. Do not use `user_metadata` for authorization, expose `service_role` or secret keys to clients, or use `auth.role()` in new policies.
 - In Next.js, remember that every `NEXT_PUBLIC_` environment variable is exposed to the browser; use publishable keys in client code and keep privileged keys server-side.
 - Before schema changes, inspect the existing database structure and determine whether the project uses declarative schemas or imperative migrations. Do not invent migration filenames; discover Supabase CLI commands and flags with `--help`.

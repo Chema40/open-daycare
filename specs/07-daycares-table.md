@@ -1,6 +1,6 @@
 # SPEC 07 — Primera tabla de guarderías
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** Ninguna
 > **Date:** 2026-10-04
 > **Objective:** Crear y verificar la tabla `public.daycares` mediante la migración imperativa existente de Supabase, con RLS activado y sin datos iniciales.
@@ -61,20 +61,31 @@ La tabla debe tener las siguientes propiedades:
 
 ## Acceptance criteria
 
-- [ ] Existe `supabase/migrations/20261004143448_create_daycares.sql` como migración imperativa de esta feature.
-- [ ] La migración crea `public.daycares` sin depender de tablas del dominio que todavía no existen.
-- [ ] `public.daycares.id` es de tipo `uuid`, es la clave primaria y tiene `gen_random_uuid()` como default.
-- [ ] `public.daycares.name` es de tipo `text` y `NOT NULL`.
-- [ ] `public.daycares.created_at` es de tipo `timestamptz`, es `NOT NULL` y tiene `now()` como default.
-- [ ] Row Level Security está activado sobre `public.daycares`.
-- [ ] No existen policies sobre `public.daycares` en esta migración.
-- [ ] La migración no crea grants públicos ni acceso temporal para `anon` o `authenticated`.
-- [ ] La migración no inserta guarderías iniciales.
-- [ ] La migración se aplica correctamente al proyecto Supabase remoto.
-- [ ] Una consulta de catálogo confirma la tabla y todas sus propiedades esperadas.
-- [ ] Una consulta de seguridad confirma que RLS está activo y no hay policies.
-- [ ] Una consulta de datos confirma que `public.daycares` contiene cero filas después de la migración.
-- [ ] La verificación no modifica ninguna tabla o archivo fuera del alcance de esta spec.
+- [x] Existe `supabase/migrations/20261004143448_create_daycares.sql` como migración imperativa de esta feature.
+- [x] La migración crea `public.daycares` sin depender de tablas del dominio que todavía no existen.
+- [x] `public.daycares.id` es de tipo `uuid`, es la clave primaria y tiene `gen_random_uuid()` como default.
+- [x] `public.daycares.name` es de tipo `text` y `NOT NULL`.
+- [x] `public.daycares.created_at` es de tipo `timestamptz`, es `NOT NULL` y tiene `now()` como default.
+- [x] Row Level Security está activado sobre `public.daycares`.
+- [x] No existen policies sobre `public.daycares` en esta migración.
+- [x] La migración no crea grants públicos ni acceso temporal para `anon` o `authenticated`.
+- [x] La migración no inserta guarderías iniciales.
+- [x] La migración se aplica correctamente al proyecto Supabase remoto.
+- [x] Una consulta de catálogo confirma la tabla y todas sus propiedades esperadas.
+- [x] Una consulta de seguridad confirma que RLS está activo y no hay policies.
+- [x] Una consulta de datos confirma que `public.daycares` contiene cero filas después de la migración.
+- [x] La verificación no modifica ninguna tabla o archivo fuera del alcance de esta spec.
+
+## Verification results
+
+- Migración local inspeccionada: `supabase/migrations/20261004143448_create_daycares.sql` solo crea `public.daycares` y activa RLS.
+- Historial remoto consultado: contiene `create_daycares` con versión `20261004144410`; la tabla remota coincide con la migración local y su estado esperado.
+- Consulta de catálogo ejecutada: `id uuid NOT NULL DEFAULT gen_random_uuid()`, `name text NOT NULL` y `created_at timestamptz NOT NULL DEFAULT now()`; `id` es la clave primaria.
+- Consulta de seguridad ejecutada: RLS está activo, no está forzado y no existen policies sobre `public.daycares`.
+- Consulta de privilegios ejecutada: no hay `GRANT` en la migración local; el remoto conserva ACLs por defecto para `anon` y `authenticated`, sin policies que permitan filas.
+- Consulta de conteo ejecutada después de aplicar la migración: `public.daycares` contiene `0` filas.
+- Comandos ejecutados: `npx tsc --noEmit` y `npm run build` pasan; `npm run lint` falla únicamente por dos errores preexistentes en `references/pantallas/support.js` (`ReactDOM.render` y `no-assign-module-variable`).
+- No se realizaron cambios de aplicación ni de base de datos durante esta verificación; solo se actualizó esta spec.
 
 ## Decisions
 
