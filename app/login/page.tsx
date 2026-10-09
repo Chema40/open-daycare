@@ -1,3 +1,7 @@
+import Link from "next/link";
+
+import LoginForm from "./login-form";
+
 export default function LoginPage() {
   return (
     <main className="login-page">
@@ -5,7 +9,7 @@ export default function LoginPage() {
         <div className="login-hero-decoration login-hero-decoration-top" aria-hidden="true" />
         <div className="login-hero-decoration login-hero-decoration-bottom" aria-hidden="true" />
 
-        <a className="login-brand" href="#" aria-label="Ir al inicio de OpenDayCare">
+          <Link className="login-brand" href="/" aria-label="Ir al inicio de OpenDayCare">
           <span className="login-brand-mark" aria-hidden="true">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="4" />
@@ -13,7 +17,7 @@ export default function LoginPage() {
             </svg>
           </span>
           <span>OpenDayCare</span>
-        </a>
+          </Link>
 
         <div className="login-hero-copy">
           <h1 id="login-hero-title">
@@ -32,23 +36,10 @@ export default function LoginPage() {
           <h2 id="login-title">Iniciar sesión</h2>
           <p className="login-subtitle">Ingresá para ver el día de hoy.</p>
 
-          <form className="login-form" action="#">
-            <div className="login-field">
-              <label htmlFor="email">Email</label>
-              <input id="email" name="email" type="email" defaultValue="caro@opendaycare.com" />
-            </div>
-
-            <div className="login-field">
-              <label htmlFor="password">Contraseña</label>
-              <input id="password" name="password" type="password" placeholder="••••••••" />
-            </div>
-
-            <a className="login-recovery-link" href="#">¿Olvidaste tu contraseña?</a>
-            <a className="login-submit" href="#">Iniciar sesión</a>
-          </form>
+          <LoginForm />
 
           <p className="login-activation-prompt">
-            ¿Te invitó la guardería? <a href="#">Activá tu cuenta</a>
+            ¿Te invitó la guardería? <a href="/activate-account">Activá tu cuenta</a>
           </p>
         </div>
       </section>

@@ -1761,6 +1761,33 @@ textarea:focus-visible {
   padding: 15px;
 }
 
+.login-submit:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.login-status {
+  min-height: 1.4em;
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+#login-error,
+#email-error,
+#password-error {
+  margin: -10px 0 14px;
+  color: #b33f2d;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+#login-error:focus {
+  outline: 3px solid rgb(78 114 200 / 35%);
+  outline-offset: 3px;
+}
+
 .login-activation-prompt,
 .activation-login-prompt {
   color: var(--muted);
