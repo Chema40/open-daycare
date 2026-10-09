@@ -45,11 +45,13 @@ export default function ActivateAccountPage() {
             <span>Autorizo a la guardería a tomar y compartir fotos de mi hijo dentro de la app.</span>
           </div>
 
-          <a className="activation-submit" href="#">Activar mi cuenta</a>
+          <button className="activation-submit" type="button" disabled>
+            Activar mi cuenta
+          </button>
         </form>
 
         <p className="activation-login-prompt">
-          ¿Ya tenés cuenta? <a href="#">Iniciar sesión</a>
+          ¿Ya tenés cuenta? <a href="/login">Iniciar sesión</a>
         </p>
       </div>
     </main>
