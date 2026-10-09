@@ -21,6 +21,12 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## Supabase
 
 - Use the `supabase` skill for any task involving Supabase, including Database, Auth, Storage, Realtime, Edge Functions, the CLI, MCP, `supabase-js`, `@supabase/ssr`, RLS, migrations, logs, or security issues.
+- The application uses `@supabase/supabase-js` for database queries and `@supabase/ssr` for browser/server clients and cookie-based sessions. Keep both packages aligned with `package.json` and update `package-lock.json` when changing them.
+- Next.js does not provide a database client. Use Supabase for database access and use Next.js App Router APIs only as the request/runtime boundary:
+  - Server Components such as `app/page.tsx` may call `cookies()` from `next/headers` and create a client with `utils/supabase/server.ts`.
+  - Client Components must use `utils/supabase/client.ts` and must never receive a service-role or secret key.
+  - `proxy.ts` is the Next.js 16 convention for request middleware and delegates session refresh to `utils/supabase/middleware.ts`.
+- Keep Supabase access behind the existing helpers instead of creating ad-hoc clients in route or component files. Use `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`; never expose privileged keys to the browser.
 - Use the `supabase-postgres-best-practices` skill before writing or changing PostgreSQL queries, schemas, migrations, indexes, triggers, functions, RLS policies, connection settings, or performance diagnostics.
 - Supabase changes frequently; verify the current changelog and official documentation before implementing features or relying on API, CLI, MCP, or configuration behavior.
 - Verify Supabase changes with a test query or equivalent check. If an approach fails after two or three attempts, stop retrying and inspect the error, documentation, and relevant logs.
