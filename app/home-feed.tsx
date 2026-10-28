@@ -3,6 +3,7 @@
 import { useRef, useState, type MouseEvent } from "react";
 import Link from "next/link";
 import CreatePostModal from "@/app/create-post-modal";
+import Counter from "@/app/counter";
 
 type FeedChild = {
   id: string;
@@ -49,6 +50,8 @@ export default function Home({ linkedChildren }: Props) {
             <h1>Actualizaciones de tus niños</h1>
             <p className="feed-date">{linkedChildren.length} {linkedChildren.length === 1 ? "niño vinculado" : "niños vinculados"}</p>
           </header>
+
+          <Counter />
 
           <button className="composer" type="button" onClick={openCreatePost} aria-label="Crear una nueva publicación">
             <span className="composer-avatar" aria-hidden="true">＋</span>

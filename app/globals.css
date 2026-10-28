@@ -249,6 +249,56 @@ textarea:focus-visible {
   font-size: 14.5px;
 }
 
+.counter {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: 0 4px 14px -10px rgb(120 90 60 / 40%);
+}
+
+.counter h2 {
+  margin: 0;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.counter-value {
+  min-width: 2ch;
+  margin: 0;
+  color: var(--coral-dark);
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.counter-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.counter-actions button {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--active);
+  color: var(--coral-dark);
+  cursor: pointer;
+  font: inherit;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+}
+
 .composer {
   display: flex;
   align-items: center;
