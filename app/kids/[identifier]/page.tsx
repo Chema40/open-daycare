@@ -1,167 +1,50 @@
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getKidByIdentifier, kids } from "../data";
+import { createClient } from "@/utils/supabase/server";
 import { LinkParentTrigger } from "./link-parent-modal";
 
-export function generateStaticParams() {
-  return kids.flatMap((kid) => [
-    { identifier: String(kid.id) },
-    { identifier: kid.slug },
-  ]);
+type ChildRow = {
+  id: string;
+  full_name: string;
+  birth_date: string;
+  enrolled_at: string;
+  medical_notes: string | null;
+  allergy_tags: string[] | null;
+  photo_consent: boolean;
+  rooms: { name: string }[] | { name: string } | null;
+};
+
+function dateLabel(value: string) {
+  return new Intl.DateTimeFormat("es", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${value}T00:00:00Z`));
 }
 
-export default async function KidProfilePage({
-  params,
-}: {
-  params: Promise<{ identifier: string }>;
-}) {
+function ageLabel(value: string) {
+  const birthDate = new Date(`${value}T00:00:00Z`);
+  const today = new Date();
+  let age = today.getUTCFullYear() - birthDate.getUTCFullYear();
+  const beforeBirthday = today.getUTCMonth() < birthDate.getUTCMonth() || (today.getUTCMonth() === birthDate.getUTCMonth() && today.getUTCDate() < birthDate.getUTCDate());
+  if (beforeBirthday) age -= 1;
+  return `${age} ${age === 1 ? "año" : "años"}`;
+}
+
+export default async function KidProfilePage({ params }: { params: Promise<{ identifier: string }> }) {
   const { identifier } = await params;
-  const kid = getKidByIdentifier(identifier);
+  const supabase = createClient(await cookies());
+  const { data } = await supabase.from("children").select("id, full_name, birth_date, enrolled_at, medical_notes, allergy_tags, photo_consent, rooms(name)").eq("id", identifier).eq("status", "active").maybeSingle();
+  const kid = data as ChildRow | null;
+  if (!kid) notFound();
 
-  if (!kid) {
-    notFound();
-  }
+  const roomName = Array.isArray(kid.rooms) ? kid.rooms[0]?.name ?? "Sin sala" : kid.rooms?.name ?? "Sin sala";
+  const allergies = kid.allergy_tags ?? [];
 
-  return (
-    <div className="app-shell">
-      <aside className="sidebar" aria-label="Navegación principal">
-        <Link className="brand" href="/" aria-label="Ir al inicio de OpenDayCare">
-          <span className="brand-mark" aria-hidden="true" />
-          <span className="brand-copy">
-            <strong>OpenDayCare</strong>
-            <span>Sala Soles</span>
-          </span>
-        </Link>
-
-        <a className="new-post-link" href="#">
-          <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
-            <path d="M12 5v14M5 12h14" />
-          </svg>
-          Nueva publicación
-        </a>
-
-        <nav className="main-nav" aria-label="Secciones de OpenDayCare">
-          <Link className="nav-link" href="/">
-            <svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" />
-            </svg>
-            Feed
-          </Link>
-          <Link className="nav-link is-active" href="/kids" aria-current="page">
-            <svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="9" cy="7" r="3" />
-              <circle cx="17" cy="9" r="2.4" />
-              <path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 20a5 5 0 0 1 5.5-4.9" />
-            </svg>
-            Niños
-          </Link>
-          <a className="nav-link" href="#">
-            <svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0" />
-            </svg>
-            Avisos
-          </a>
-          <a className="nav-link" href="#">
-            <svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-            Mi cuenta
-          </a>
-        </nav>
-
-        <div className="profile-summary">
-          <div className="profile-avatar" aria-hidden="true">C</div>
-          <div className="profile-copy">
-            <strong>Caro Giménez</strong>
-            <span>Maestra · Soles</span>
-          </div>
-          <a className="logout-link" href="#" aria-label="Cerrar sesión">
-            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
-            </svg>
-          </a>
-        </div>
-      </aside>
-
-      <main className="feed-main">
-        <div className="profile-container">
-          <Link className="back-to-kids" href="/kids">
-            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m15 18-6-6 6-6" />
-            </svg>
-            Volver a Niños
-          </Link>
-
-          <div className="profile-layout">
-            <div className="profile-main-column">
-              <header className="kid-profile-header">
-                <div className="kid-profile-avatar" style={{ backgroundColor: kid.avatarColor, color: kid.avatarTextColor }} aria-hidden="true">
-                  {kid.initial}
-                </div>
-                <div className="kid-profile-heading">
-                  <h1>{kid.name}</h1>
-                  <p>{kid.age} años · Sala {kid.room}</p>
-                </div>
-                <a className="edit-kid-link" href="#">Editar</a>
-              </header>
-
-              <section className="notes-alert" aria-labelledby="notes-heading">
-                <div className="notes-icon" aria-hidden="true">!</div>
-                <div>
-                  <h2 id="notes-heading">Alergias y notas</h2>
-                  <p>{kid.notes ?? "Sin alergias ni notas registradas."}</p>
-                </div>
-              </section>
-
-              <dl className="kid-details">
-                <div>
-                  <dt>Fecha de nacimiento</dt>
-                  <dd>{kid.birthDate}</dd>
-                </div>
-                <div>
-                  <dt>Sala</dt>
-                  <dd>{kid.room}</dd>
-                </div>
-                <div>
-                  <dt>Ingreso</dt>
-                  <dd>{kid.admissionDate}</dd>
-                </div>
-              </dl>
-            </div>
-
-            <aside className="profile-side-column">
-              <a className="day-summary-link" href="#">
-                <span className="sun-icon" aria-hidden="true">✦</span>
-                Resumen del día
-              </a>
-
-              <section className="linked-parents" aria-labelledby="parents-heading">
-                <h2 id="parents-heading">Padres vinculados</h2>
-                <div className="linked-parents-list">
-                  {kid.linkedParents.map((parent) => (
-                    <div className="linked-parent" key={parent.name}>
-                      <span className="parent-avatar" style={{ backgroundColor: parent.color }} aria-hidden="true">{parent.initial}</span>
-                      <span className="parent-copy">
-                        <strong>{parent.name}</strong>
-                        <span>{parent.relationship} · {parent.status === "active" ? "activa" : "invitación enviada"}</span>
-                      </span>
-                      <span className={`parent-status parent-status-${parent.status}`}>
-                        {parent.status === "active" ? "ACTIVA" : "PENDIENTE"}
-                      </span>
-                    </div>
-                  ))}
-                  {!kid.linkedParents.length && <p className="no-linked-parents">Todavía no hay padres vinculados.</p>}
-                  <LinkParentTrigger
-                    childName={kid.name}
-                    hasLinkedParents={kid.linkedParents.length > 0}
-                  />
-                </div>
-              </section>
-            </aside>
-          </div>
-        </div>
-      </main>
-    </div>
-  );
+  return <div className="app-shell">
+    <aside className="sidebar" aria-label="Navegación principal">
+      <Link className="brand" href="/" aria-label="Ir al inicio de OpenDayCare"><span className="brand-mark" aria-hidden="true" /><span className="brand-copy"><strong>OpenDayCare</strong><span>Sala Soles</span></span></Link>
+      <a className="new-post-link" href="#"><span aria-hidden="true">＋</span>Nueva publicación</a>
+      <nav className="main-nav" aria-label="Secciones de OpenDayCare"><Link className="nav-link" href="/"><span aria-hidden="true">⌂</span>Feed</Link><Link className="nav-link is-active" href="/kids" aria-current="page"><span aria-hidden="true">♧</span>Niños</Link><a className="nav-link" href="#"><span aria-hidden="true">♧</span>Avisos</a><a className="nav-link" href="#"><span aria-hidden="true">♙</span>Mi cuenta</a></nav>
+      <div className="profile-summary"><div className="profile-avatar" aria-hidden="true">C</div><div className="profile-copy"><strong>Caro Giménez</strong><span>Maestra · Soles</span></div><a className="logout-link" href="#" aria-label="Cerrar sesión">↪</a></div>
+    </aside>
+    <main className="feed-main"><div className="profile-container"><Link className="back-to-kids" href="/kids">← Volver a Niños</Link><div className="profile-layout"><div className="profile-main-column"><header className="kid-profile-header"><div className="kid-profile-avatar" aria-hidden="true">{kid.full_name[0]?.toUpperCase()}</div><div className="kid-profile-heading"><h1>{kid.full_name}</h1><p>{ageLabel(kid.birth_date)} · Sala {roomName}</p></div><Link className="edit-kid-link" href="/kids">Editar</Link></header><section className="notes-alert" aria-labelledby="notes-heading"><div className="notes-icon" aria-hidden="true">!</div><div><h2 id="notes-heading">Alergias y notas</h2><p>{allergies.length ? `Alergias: ${allergies.join(", ")}. ` : ""}{kid.medical_notes ?? "Sin alergias ni notas registradas."}</p></div></section><dl className="kid-details"><div><dt>Fecha de nacimiento</dt><dd>{dateLabel(kid.birth_date)}</dd></div><div><dt>Sala</dt><dd>{roomName}</dd></div><div><dt>Ingreso</dt><dd>{dateLabel(kid.enrolled_at)}</dd></div><div><dt>Consentimiento de fotos</dt><dd>{kid.photo_consent ? "Sí" : "No"}</dd></div></dl></div><aside className="profile-side-column"><a className="day-summary-link" href="#"><span className="sun-icon" aria-hidden="true">✦</span>Resumen del día</a><section className="linked-parents" aria-labelledby="parents-heading"><h2 id="parents-heading">Padres vinculados</h2><div className="linked-parents-list"><p className="no-linked-parents">Todavía no hay padres vinculados.</p><LinkParentTrigger childName={kid.full_name} hasLinkedParents={false} /></div></section></aside></div></div></main>
+  </div>;
 }
