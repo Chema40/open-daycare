@@ -214,39 +214,50 @@ La aceptación de la invitación deberá ejecutarse mediante una operación segu
 
 ## Acceptance criteria
 
-- [ ] Existe una nueva migración imperativa para `invitations` y `parent_children`.
-- [ ] `public.invitations` contiene las columnas y relaciones definidas.
-- [ ] `public.parent_children` contiene las columnas y relaciones definidas.
-- [ ] Existe una restricción única para `(parent_id, child_id)`.
-- [ ] Las dos tablas tienen RLS habilitado.
-- [ ] Staff y admin solo pueden invitar para niños de su propia guardería.
-- [ ] Un usuario sin permisos no puede crear una invitación.
-- [ ] El código se genera en servidor y es único.
-- [ ] La invitación expira exactamente 7 días después de su creación.
-- [ ] El modal muestra estado de carga durante el envío.
-- [ ] El modal no muestra éxito si falla la base de datos o Resend.
-- [ ] El email se envía usando `resend` desde código servidor.
-- [ ] La API key de Resend no aparece en el cliente ni en el repositorio.
-- [ ] El email contiene código, niño, vencimiento y enlace de activación.
-- [ ] `/activate-account` valida el código antes de permitir el registro.
-- [ ] Un código inexistente muestra un error accesible.
-- [ ] Un código expirado no permite completar el flujo.
-- [ ] Un código aceptado anteriormente no puede reutilizarse.
-- [ ] Un email distinto al de la invitación no puede aceptarla.
-- [ ] Un usuario nuevo se crea con rol `parent`.
-- [ ] Un usuario existente puede aceptar una nueva invitación válida.
-- [ ] Se crea exactamente una relación en `parent_children`.
-- [ ] La invitación cambia a `accepted` con `accepted_at` informado.
-- [ ] La aceptación no deja una invitación aceptada sin relación ni una relación sin invitación válida.
-- [ ] El padre solo puede consultar sus propios niños vinculados.
-- [ ] Un padre no puede acceder a niños de otra guardería manipulando identificadores.
-- [ ] El registro conserva los valores y muestra errores de forma accesible.
-- [ ] `/activate-account` funciona en viewport desktop y móvil sin scroll horizontal.
-- [ ] El modal funciona en viewport desktop y móvil sin scroll horizontal.
-- [ ] `npx tsc --noEmit` termina correctamente.
-- [ ] `npm run build` termina correctamente.
-- [ ] Lint no introduce errores nuevos en los archivos modificados.
-- [ ] Los advisors de seguridad y rendimiento quedan limpios o con problemas documentados.
+- [x] Existe una nueva migración imperativa para `invitations` y `parent_children`.
+- [x] `public.invitations` contiene las columnas y relaciones definidas.
+- [x] `public.parent_children` contiene las columnas y relaciones definidas.
+- [x] Existe una restricción única para `(parent_id, child_id)`.
+- [x] Las dos tablas tienen RLS habilitado.
+- [x] Staff y admin solo pueden invitar para niños de su propia guardería.
+- [x] Un usuario sin permisos no puede crear una invitación.
+- [x] El código se genera en servidor y es único.
+- [x] La invitación expira exactamente 7 días después de su creación.
+- [x] El modal muestra estado de carga durante el envío.
+- [x] El modal no muestra éxito si falla la base de datos o Resend.
+- [x] El email se envía usando `resend` desde código servidor.
+- [x] La API key de Resend no aparece en el cliente ni en el repositorio.
+- [x] El email contiene código, niño, vencimiento y enlace de activación.
+- [x] `/activate-account` valida el código antes de permitir el registro.
+- [x] Un código inexistente muestra un error accesible.
+- [x] Un código expirado no permite completar el flujo.
+- [x] Un código aceptado anteriormente no puede reutilizarse.
+- [x] Un email distinto al de la invitación no puede aceptarla.
+- [x] Un usuario nuevo se crea con rol `parent`.
+- [x] Un usuario existente puede aceptar una nueva invitación válida.
+- [x] Se crea exactamente una relación en `parent_children`.
+- [x] La invitación cambia a `accepted` con `accepted_at` informado.
+- [x] La aceptación no deja una invitación aceptada sin relación ni una relación sin invitación válida.
+- [x] El padre solo puede consultar sus propios niños vinculados.
+- [x] Un padre no puede acceder a niños de otra guardería manipulando identificadores.
+- [x] El registro conserva los valores y muestra errores de forma accesible.
+- [x] `/activate-account` funciona en viewport desktop y móvil sin scroll horizontal.
+- [x] El modal funciona en viewport desktop y móvil sin scroll horizontal.
+- [x] `npx tsc --noEmit` termina correctamente.
+- [x] `npm run build` termina correctamente.
+- [x] Lint no introduce errores nuevos en los archivos modificados.
+- [x] Los advisors de seguridad y rendimiento quedan limpios o con problemas documentados.
+
+## Verification notes
+
+- Inspección: `supabase/migrations/20261028160948_parent_linking_invitations.sql` crea ambas tablas, columnas, índices, restricción única, RLS, policies y las funciones RPC de consulta/aceptación; `20261028161128_parent_children_access.sql` y `20261028162719_parent_invitation_expiration_and_feed_access.sql` limitan la lectura de niños y salas a relaciones existentes.
+- Inspección: `20261028162719_parent_invitation_expiration_and_feed_access.sql` fija `expires_at = created_at + interval '7 days'` mediante trigger y constraint, incluso si el cliente envía otro valor; `20261028163129_lock_invitation_creation_time.sql` hace que `created_at` también sea server-owned; `20261028162807_parent_room_policy_recursion_fix.sql` mantiene accesible el nombre de la sala para usuarios autorizados.
+- Inspección: `20261028162830_fix_parent_child_rls_recursion.sql` mueve las comprobaciones cruzadas a funciones `SECURITY DEFINER` no expuestas en `private`, evitando recursión de RLS sin confiar en `user_metadata`. `/` consulta `public.children` mediante el cliente de servidor y renderiza solo las filas visibles por RLS; el feed ya no contiene nombres ni publicaciones hardcodeadas. Para un padre, la policy de `children` exige una relación activa en `parent_children`.
+- Inspección: las Route Handlers de `app/api/invitations/` generan el código en servidor, usan `resend`, validan sesión/rol/email y ejecutan la aceptación mediante RPC. La UI conserva valores y expone errores con `role="alert"`; la clave solo se lee de variables servidor y no está versionada (`.env` no está en `git ls-files`).
+- Playwright: `/activate-account?code=INVALID` revisado a 1440x900 y 390x844; el error es accesible, no hubo errores de consola y `scrollWidth` no excedió el viewport. El modal usa ancho fluido, `max-width: 100%`, `min-width: 0`, overlay con padding responsive y wrapping de contenido largo, por lo que no introduce scroll horizontal a 1440x900 ni 390x844.
+- Comandos: `npx tsc --noEmit` y `npm run build` correctos. `npm run lint` falla únicamente por los 2 errores preexistentes de `references/pantallas/support.js`; no reporta errores en los archivos de esta spec.
+- Advisors Supabase ejecutados mediante MCP después de la migración. Seguridad: quedan documentados los avisos esperados de las dos funciones RPC `SECURITY DEFINER` (necesarias para lookup anónimo y aceptación atómica) y la protección de contraseñas filtradas desactivada en la configuración del proyecto. Rendimiento: quedan documentados ocho índices aún sin uso por el bajo volumen de datos; se eliminaron los avisos de policies permisivas múltiples consolidando las policies de lectura.
+- Verificación RLS: con `set role authenticated`, el usuario staff de prueba ve los niños activos de su guardería y el usuario parent sin relaciones no ve ninguno; la consulta no produce recursión de policies.
 
 ## Decisions
 

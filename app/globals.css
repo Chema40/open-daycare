@@ -1189,6 +1189,7 @@ textarea:focus-visible {
 
 .link-parent-modal {
   width: 100%;
+  min-width: 0;
   max-width: 480px;
   max-height: calc(100vh - 80px);
   border: 1px solid var(--border);
@@ -1260,6 +1261,7 @@ textarea:focus-visible {
   color: #3f5694;
   font-size: 13.5px;
   line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 .link-parent-info svg {
@@ -1439,6 +1441,7 @@ textarea:focus-visible {
   }
 
   .link-parent-modal {
+    width: 100%;
     max-height: calc(100vh - 48px);
   }
 }
@@ -1449,6 +1452,7 @@ textarea:focus-visible {
   }
 
   .link-parent-modal {
+    width: 100%;
     max-height: calc(100vh - 32px);
     border-radius: 20px;
   }

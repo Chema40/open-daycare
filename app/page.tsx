@@ -2,21 +2,19 @@ import { cookies } from "next/headers";
 import HomeFeed from "@/app/home-feed";
 import { createClient } from "@/utils/supabase/server";
 
-export default async function Page() {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
-  const { data: todos } = await supabase.from("todos").select();
+type FeedChild = {
+  id: string;
+  full_name: string;
+  rooms: { name: string } | { name: string }[] | null;
+};
 
-  return (
-    <>
-      <HomeFeed />
-      {todos && todos.length > 0 ? (
-        <ul aria-label="Todos">
-          {todos.map((todo) => (
-            <li key={todo.id}>{todo.name}</li>
-          ))}
-        </ul>
-      ) : null}
-    </>
-  );
+export default async function Page() {
+  const supabase = createClient(await cookies());
+  const { data } = await supabase
+    .from("children")
+    .select("id, full_name, rooms(name)")
+    .eq("status", "active")
+    .order("full_name");
+
+  return <HomeFeed linkedChildren={(data ?? []) as FeedChild[]} />;
 }
