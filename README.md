@@ -54,6 +54,15 @@ npm run build        # Genera la compilación de producción
 npm run start        # Sirve la compilación de producción
 ```
 
+## Agentes del proyecto
+
+Las definiciones de los agentes personalizados están en `.opencode/agent/`:
+
+- `acceptance-verifier`: verifica criterios de aceptación de specs con código, comandos, Playwright y evidencia visual.
+- `accessibility-checker`: audita y mejora la accesibilidad de los archivos indicados conforme a WCAG 2.2 AA.
+- `db-migrator`: gestiona de forma segura las migraciones versionadas de la base de datos de Supabase.
+- `react-best-practices`: revisa y aplica buenas prácticas de React en los archivos explícitamente indicados.
+
 ## Supabase CLI y autenticación del equipo
 
 El directorio `supabase/migrations` contiene las migraciones de la base de

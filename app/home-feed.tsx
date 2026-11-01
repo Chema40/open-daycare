@@ -33,12 +33,14 @@ export default function Home({ linkedChildren }: Props) {
           <span className="brand-mark" aria-hidden="true" />
           <span className="brand-copy"><strong>OpenDayCare</strong><span>Sala Soles</span></span>
         </Link>
-        <button className="new-post-link" type="button" onClick={openCreatePost}>＋ Nueva publicación</button>
+        <button className="new-post-link" type="button" onClick={openCreatePost}>
+          <span aria-hidden="true">＋</span> Nueva publicación
+        </button>
         <nav className="main-nav" aria-label="Secciones de OpenDayCare">
-          <Link className="nav-link is-active" href="/" aria-current="page">⌂ Feed</Link>
-          <Link className="nav-link" href="/kids">♧ Niños</Link>
-          <a className="nav-link" href="#">♢ Avisos</a>
-          <a className="nav-link" href="#">♙ Mi cuenta</a>
+          <Link className="nav-link is-active" href="/" aria-current="page"><span aria-hidden="true">⌂</span> Feed</Link>
+          <Link className="nav-link" href="/kids"><span aria-hidden="true">♧</span> Niños</Link>
+          <a className="nav-link" href="#"><span aria-hidden="true">♢</span> Avisos</a>
+          <a className="nav-link" href="#"><span aria-hidden="true">♙</span> Mi cuenta</a>
         </nav>
         <div className="profile-summary"><div className="profile-avatar" aria-hidden="true">C</div><div className="profile-copy"><strong>OpenDayCare</strong><span>Feed personalizado</span></div></div>
       </aside>
@@ -71,7 +73,7 @@ export default function Home({ linkedChildren }: Props) {
               {linkedChildren.map((child) => (
                 <article className="post-card" aria-label={`Actualizaciones de ${child.full_name}`} key={child.id}>
                   <header className="post-header">
-                    <div className="post-avatar post-avatar-child" aria-hidden="true">{child.full_name[0]}</div>
+                    <div className="post-avatar post-avatar-child" aria-hidden="true">{child.full_name.charAt(0) || "?"}</div>
                     <div className="post-author"><strong>{child.full_name}</strong><span>Sala {roomName(child)} · hoy</span></div>
                     <div className="post-status status-achievement"><span aria-hidden="true" /> VINCULADO</div>
                   </header>

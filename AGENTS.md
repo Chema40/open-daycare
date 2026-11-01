@@ -48,6 +48,15 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - `supabase`: guidance for Supabase integrations, security, CLI, MCP, schema changes, debugging, and verification.
 - `supabase-postgres-best-practices`: PostgreSQL performance, schema design, connection management, concurrency, data access, monitoring, advanced features, and RLS guidance.
 
+## Project Agents
+
+Los agentes personalizados del proyecto se encuentran en `.opencode/agent/`:
+
+- `acceptance-verifier`: verifica criterios de aceptación de specs mediante inspección del código, comandos del proyecto, Next.js, Playwright y evidencia visual.
+- `accessibility-checker`: audita y mejora los archivos indicados según WCAG 2.2 nivel AA, priorizando HTML semántico y soluciones nativas.
+- `db-migrator`: crea, valida y aplica de forma segura migraciones versionadas de la base de datos de Supabase.
+- `react-best-practices`: revisa y aplica buenas prácticas actuales de React únicamente en los archivos que se indiquen explícitamente.
+
 ## Verification
 
 - `acceptance-verifier` (`.opencode/agent/acceptance-verifier.md`) verifica los criterios de aceptación de una spec con inspección del código, comandos del proyecto, Next.js, Playwright y evidencia visual. Actualiza únicamente los checks y las notas de verificación de la spec.

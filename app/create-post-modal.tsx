@@ -9,9 +9,7 @@ import {
   type FormEvent,
   type RefObject,
 } from "react";
-import { kids } from "@/app/kids/data";
-
-export type PostRecipient = number | "room";
+export type PostRecipient = "Mateo" | "Sofía" | "Benjamín" | "Toda la sala";
 
 export type PostType =
   | "Comida"
@@ -23,7 +21,7 @@ export type PostType =
   | "Anuncio";
 
 export type CreatePostForm = {
-  recipient: PostRecipient[];
+  recipient: PostRecipient | "";
   type: PostType | "";
   description: string;
 };
@@ -33,7 +31,7 @@ export type CreatePostErrors = Partial<
 >;
 
 const emptyForm: CreatePostForm = {
-  recipient: [],
+  recipient: "",
   type: "",
   description: "",
 };
@@ -47,6 +45,8 @@ const postTypes: PostType[] = [
   "Foto",
   "Anuncio",
 ];
+
+const recipients: PostRecipient[] = ["Mateo", "Sofía", "Benjamín", "Toda la sala"];
 
 const focusableSelector =
   'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -81,6 +81,8 @@ export default function CreatePostModal({
     const getFocusableElements = () =>
       Array.from(modal.querySelectorAll<HTMLElement>(focusableSelector));
 
+    setForm(emptyForm);
+    setErrors({});
     getFocusableElements()[0]?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -135,7 +137,7 @@ export default function CreatePostModal({
 
     const nextErrors: CreatePostErrors = {};
 
-    if (form.recipient.length === 0) {
+    if (!form.recipient) {
       nextErrors.recipient = "Elegí un destinatario.";
     }
 
@@ -164,25 +166,7 @@ export default function CreatePostModal({
   };
 
   const handleRecipientChange = (recipient: PostRecipient) => {
-    setForm((currentForm) => {
-      if (recipient === "room") {
-        return {
-          ...currentForm,
-          recipient: currentForm.recipient.includes("room") ? [] : ["room"],
-        };
-      }
-
-      const nextRecipients = currentForm.recipient.filter(
-        (selectedRecipient) => selectedRecipient !== "room",
-      );
-
-      return {
-        ...currentForm,
-        recipient: nextRecipients.includes(recipient)
-          ? nextRecipients.filter((selectedRecipient) => selectedRecipient !== recipient)
-          : [...nextRecipients, recipient],
-      };
-    });
+    setForm((currentForm) => ({ ...currentForm, recipient }));
   };
 
   return (
@@ -211,40 +195,23 @@ export default function CreatePostModal({
             >
               <legend>Para</legend>
               <div className="create-post-options">
-                {kids.map((kid) => (
-                  <label key={kid.id}>
+                {recipients.map((recipient) => (
+                  <label key={recipient}>
                     <input
-                      type="checkbox"
+                      type="radio"
                       name="recipient"
-                      value={kid.id}
-                      checked={form.recipient.includes(kid.id)}
+                      value={recipient}
+                      checked={form.recipient === recipient}
                       aria-invalid={Boolean(errors.recipient)}
                       aria-describedby={errors.recipient ? "create-post-recipient-error" : undefined}
-                      onChange={() => handleRecipientChange(kid.id)}
+                      onChange={() => handleRecipientChange(recipient)}
                     />
-                    <span
-                      className="recipient-avatar"
-                      style={{ backgroundColor: kid.avatarColor, color: kid.avatarTextColor }}
-                      aria-hidden="true"
-                    >
-                      {kid.initial}
+                    <span className={`recipient-avatar recipient-${recipient.toLowerCase().replaceAll(" ", "-")}`} aria-hidden="true">
+                      {recipient === "Toda la sala" ? "S" : recipient[0]}
                     </span>
-                    {kid.name}
+                    {recipient}
                   </label>
                 ))}
-                <label>
-                  <input
-                    type="checkbox"
-                    name="recipient"
-                    value="room"
-                    checked={form.recipient.includes("room")}
-                    aria-invalid={Boolean(errors.recipient)}
-                    aria-describedby={errors.recipient ? "create-post-recipient-error" : undefined}
-                    onChange={() => handleRecipientChange("room")}
-                  />
-                  <span className="recipient-avatar recipient-room" aria-hidden="true" />
-                  Toda la sala
-                </label>
               </div>
               {errors.recipient && (
                 <p id="create-post-recipient-error" role="alert">
@@ -269,7 +236,12 @@ export default function CreatePostModal({
                       checked={form.type === postType}
                       aria-invalid={Boolean(errors.type)}
                       aria-describedby={errors.type ? "create-post-type-error" : undefined}
-                      onChange={() => setForm({ ...form, type: postType })}
+                      onChange={() =>
+                        setForm((currentForm) => ({
+                          ...currentForm,
+                          type: postType,
+                        }))
+                      }
                     />
                     {postType}
                   </label>
@@ -291,7 +263,12 @@ export default function CreatePostModal({
                 value={form.description}
                 aria-invalid={Boolean(errors.description)}
                 aria-describedby={errors.description ? "create-post-description-error" : undefined}
-                onChange={(event) => setForm({ ...form, description: event.target.value })}
+                onChange={(event) =>
+                  setForm((currentForm) => ({
+                    ...currentForm,
+                    description: event.target.value,
+                  }))
+                }
               />
               {errors.description && (
                 <p id="create-post-description-error" role="alert">
