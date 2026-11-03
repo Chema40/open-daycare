@@ -45,16 +45,16 @@ function UsersIcon() {
 function AppShell({ children }: { children: React.ReactNode }) {
   return <div className="app-shell">
     <aside className="sidebar" aria-label="Navegación principal">
-      <Link className="brand" href="/" aria-label="Ir al inicio de OpenDayCare"><span className="brand-mark" aria-hidden="true" /><span className="brand-copy"><strong>OpenDayCare</strong><span>Sala Soles</span></span></Link>
-      <a className="new-post-link" href="#"><span aria-hidden="true">＋</span>Nueva publicación</a>
+      <Link className="brand" href="/staff/feed" aria-label="Ir al inicio de OpenDayCare"><span className="brand-mark" aria-hidden="true" /><span className="brand-copy"><strong>OpenDayCare</strong><span>Sala Soles</span></span></Link>
+      <Link className="new-post-link" href="/staff/feed"><span aria-hidden="true">＋</span>Nueva publicación</Link>
       <nav className="main-nav" aria-label="Secciones de OpenDayCare">
-        <Link className="nav-link" href="/"><span aria-hidden="true">⌂</span>Feed</Link>
-        <Link className="nav-link is-active" href="/kids" aria-current="page"><UsersIcon />Niños</Link>
+        <Link className="nav-link" href="/staff/feed"><span aria-hidden="true">⌂</span>Feed</Link>
+        <Link className="nav-link is-active" href="/staff/kids" aria-current="page"><UsersIcon />Niños</Link>
         <a className="nav-link" href="#"><span aria-hidden="true">♧</span>Avisos</a>
         <a className="nav-link" href="#"><span aria-hidden="true">♙</span>Mi cuenta</a>
       </nav>
       <div className="profile-summary"><div className="profile-avatar" aria-hidden="true">C</div><div className="profile-copy"><strong>Caro Giménez</strong><span>Maestra · Soles</span></div><a className="logout-link" href="#" aria-label="Cerrar sesión">↪</a></div>
-    </aside>
+     </aside>
     <main className="feed-main">{children}</main>
   </div>;
 }
