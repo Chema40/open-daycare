@@ -1,6 +1,6 @@
 # SPEC 06 — Modal para nueva publicación
 
-> **Status:** Implmentado
+> **Status:** Implementado
 > **Depends on:** SPEC 01
 > **Date:** 2026-09-23
 > **Objective:** Implementar en el feed de `/` un modal para crear una nueva publicación a partir de `references/pantallas/crear-publicacion.dc.html`, con validación local y sin persistir ni añadir publicaciones al feed.
@@ -86,9 +86,9 @@ No se modificará el contenido estático de las publicaciones de `app/page.tsx` 
 
 ## Acceptance criteria
 
-- [x] `/` carga sin errores de renderizado.
-- [x] Pulsar «Nueva publicación» abre el modal sin navegar a otra ruta.
-- [x] Pulsar el compositor «Compartí un momento…» abre el mismo modal sin navegar a otra ruta.
+- [ ] `/` carga sin errores de renderizado.
+- [ ] Pulsar «Nueva publicación» abre el modal sin navegar a otra ruta.
+- [ ] Pulsar el compositor «Compartí un momento…» abre el mismo modal sin navegar a otra ruta.
 - [x] El modal reproduce los textos y las secciones principales de `crear-publicacion.dc.html`.
 - [x] La sección «Para» muestra exactamente «Mateo», «Sofía», «Benjamín» y «Toda la sala».
 - [x] Solo un destinatario puede estar seleccionado al mismo tiempo.
@@ -108,21 +108,19 @@ No se modificará el contenido estático de las publicaciones de `app/page.tsx` 
 - [x] Pulsar el overlay no cierra el modal.
 - [x] El foco entra en el modal al abrirlo, no escapa de él mediante Tab y vuelve al activador al cerrarlo.
 - [x] Los activadores, controles, errores y acciones conservan foco visible y nombres accesibles.
-- [x] `/` y el modal se pueden usar en viewport desktop sin scroll horizontal.
-- [x] `/` y el modal se pueden usar en viewport móvil sin scroll horizontal.
+- [ ] `/` y el modal se pueden usar en viewport desktop sin scroll horizontal.
+- [ ] `/` y el modal se pueden usar en viewport móvil sin scroll horizontal.
 - [x] `npx tsc --noEmit` termina correctamente.
 - [x] `npm run build` termina correctamente.
 - [x] `npm run lint` no introduce errores nuevos en los archivos de aplicación modificados por esta spec.
-- [x] La comparación manual en navegador confirma la réplica visual del modal en desktop y móvil.
+- [ ] La comparación manual en navegador confirma la réplica visual del modal en desktop y móvil.
 
 ## Verification notes
 
-- Verificado `/` con Playwright en desktop (1200×734) y móvil (390×844): ambos activadores abren el diálogo sin cambiar la ruta; no hubo errores de consola de la aplicación ni scroll horizontal (`scrollWidth` no supera el viewport).
-- Verificados selección única, estado inicial vacío, validación de destinatario/tipo/descripción (incluidos espacios), asociación `aria-describedby`, `aria-invalid="true"` en cada radio inválido y en el `textarea`, cierre válido, no-op de «Agregar», cancelación, reinicio, bloqueo por Escape/overlay y ciclo/devolución de foco.
-- Revisada la réplica visual en desktop (1200×734) y móvil (390×844) contra `crear-publicacion.dc.html`: superficie, cabecera, avatares de destinatarios, colores de las siete categorías, textarea y controles de fotos coinciden con la composición de referencia; no hubo scroll horizontal. Evidencia: `.playwright-mcp/spec-06-publication-desktop-updated.png` y `.playwright-mcp/spec-06-publication-mobile-updated.png`.
-- Evidencia visual guardada en `.playwright-mcp/home-desktop.png`, `.playwright-mcp/modal-desktop.png`, `.playwright-mcp/modal-mobile.png` y `.playwright-mcp/reference-create-post.png`. La composición general, espaciado, tipografía, superficie, acciones y responsive son consistentes, pero la referencia usa colores distintos por categoría y avatar por destinatario; la implementación muestra chips neutrales y avatares azules comunes. La referencia también muestra valores de ejemplo; la implementación permanece vacía al abrir conforme a esta spec. Por esa diferencia material queda pendiente el criterio de réplica visual.
-- `npx tsc --noEmit` y `npm run build` finalizaron correctamente. `npm run lint` mantiene únicamente los 2 errores y 8 avisos preexistentes de `references/pantallas/support.js`; no reportó errores en los archivos de aplicación de esta spec.
-- Se contrastaron las convenciones App Router de Next.js 16 mediante Context7; no se encontraron documentos locales disponibles bajo `node_modules/next/dist/docs/` en este checkout. Quedan pendientes los criterios de `aria-invalid` por radio y de equivalencia visual completa.
+- Inspección de `app/create-post-modal.tsx`, `app/home-feed.tsx`, `app/counter.tsx`, `app/globals.css` y `crear-publicacion.dc.html`: se verificaron las cuatro etiquetas exactas de destinatario, selección única mediante radios, tipos, estado inicial, validaciones, asociaciones ARIA, cierre válido/cancelación, no-op de «Agregar», reinicio, overlay, bloqueo de Escape, ciclo de foco y ausencia de persistencia.
+- Playwright sigue bloqueado en desktop y móvil: `GET http://localhost:3001/` devuelve HTTP 500. El servidor Next.js 16.3.5 registra `TypeError: headers.hasOwnProperty is not a function` en el flujo de proxy y, en producción, `TypeError: e.hasOwnProperty is not a function` en `.next/server/chunks/_11hea9-._.js`. No fue posible probar activadores, interacción, scroll horizontal ni comparación visual; no se generaron nuevas capturas.
+- `npx tsc --noEmit` y `npm run build` finalizaron correctamente después de añadir `app/counter.tsx`. `npm run lint` mantiene únicamente los 2 errores y 8 avisos preexistentes de `references/pantallas/support.js`, sin errores en los archivos de aplicación de esta spec.
+- Se consultó Context7 para las convenciones de Client Components y foco en diálogos de Next.js, y se revisaron los documentos locales de Next.js 16 en `node_modules/next/dist/docs/`. Quedan pendientes solo los criterios que requieren una página funcional o comparación visual en navegador.
 
 ## Decisions
 

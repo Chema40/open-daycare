@@ -2,22 +2,25 @@
 
 import { useRef, useState, type MouseEvent } from "react";
 import Link from "next/link";
-import CreatePostModal from "@/app/create-post-modal";
+import CreatePostModal, { type CreatedPost, type PostChild } from "@/app/create-post-modal";
+import Counter from "@/app/counter";
 
 type FeedChild = {
   id: string;
   full_name: string;
-  rooms: { name: string } | { name: string }[] | null;
+  room_id: string;
+  rooms: { id: string; name: string } | { id: string; name: string }[] | null;
 };
 
-type Props = { linkedChildren: FeedChild[] };
+type Props = { linkedChildren: FeedChild[]; canCreatePosts: boolean; initialPosts: CreatedPost[] };
 
 function roomName(child: FeedChild) {
   return Array.isArray(child.rooms) ? child.rooms[0]?.name ?? "Sin sala" : child.rooms?.name ?? "Sin sala";
 }
 
-export default function Home({ linkedChildren }: Props) {
+export default function Home({ linkedChildren, canCreatePosts, initialPosts }: Props) {
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
+  const [createdPosts, setCreatedPosts] = useState<CreatedPost[]>(initialPosts);
   const createPostTriggerRef = useRef<HTMLElement | null>(null);
 
   const openCreatePost = (event: MouseEvent<HTMLButtonElement>) => {
@@ -32,12 +35,12 @@ export default function Home({ linkedChildren }: Props) {
           <span className="brand-mark" aria-hidden="true" />
           <span className="brand-copy"><strong>OpenDayCare</strong><span>Sala Soles</span></span>
         </Link>
-        <button className="new-post-link" type="button" onClick={openCreatePost}>＋ Nueva publicación</button>
+        {canCreatePosts && <button className="new-post-link" type="button" onClick={openCreatePost}><span aria-hidden="true">＋</span> Nueva publicación</button>}
         <nav className="main-nav" aria-label="Secciones de OpenDayCare">
-          <Link className="nav-link is-active" href="/" aria-current="page">⌂ Feed</Link>
-          <Link className="nav-link" href="/kids">♧ Niños</Link>
-          <a className="nav-link" href="#">♢ Avisos</a>
-          <a className="nav-link" href="#">♙ Mi cuenta</a>
+          <Link className="nav-link is-active" href="/" aria-current="page"><span aria-hidden="true">⌂</span> Feed</Link>
+          <Link className="nav-link" href="/kids"><span aria-hidden="true">♧</span> Niños</Link>
+          <a className="nav-link" href="#"><span aria-hidden="true">♢</span> Avisos</a>
+          <a className="nav-link" href="#"><span aria-hidden="true">♙</span> Mi cuenta</a>
         </nav>
         <div className="profile-summary"><div className="profile-avatar" aria-hidden="true">C</div><div className="profile-copy"><strong>OpenDayCare</strong><span>Feed personalizado</span></div></div>
       </aside>
@@ -50,14 +53,17 @@ export default function Home({ linkedChildren }: Props) {
             <p className="feed-date">{linkedChildren.length} {linkedChildren.length === 1 ? "niño vinculado" : "niños vinculados"}</p>
           </header>
 
-          <button className="composer" type="button" onClick={openCreatePost} aria-label="Crear una nueva publicación">
+          <Counter />
+
+          {canCreatePosts && <button className="composer" type="button" onClick={openCreatePost} aria-label="Crear una nueva publicación">
             <span className="composer-avatar" aria-hidden="true">＋</span>
             <span className="composer-placeholder">Compartí un momento…</span>
             <span className="composer-action" aria-hidden="true">＋</span>
-          </button>
+          </button>}
 
           <div className="feed-divider"><span>PUBLICACIONES</span><span aria-hidden="true" /></div>
-          {linkedChildren.length === 0 ? (
+          {createdPosts.map((post) => <article className="post-card" key={post.id}><header className="post-header"><div className="post-avatar" aria-hidden="true">A</div><div className="post-author"><strong>{post.title}</strong><span>{post.type} · ahora</span></div><div className="post-status status-achievement"><span aria-hidden="true" /> PUBLICADO</div></header><div className="post-recipient">{post.childNames.length ? post.childNames.join(", ") : `Toda la sala · ${post.roomName}`}</div><p className="post-text">{post.body}</p>{post.photo && <img className="post-photo" src={post.photo} alt="Imagen adjunta a la publicación" />}</article>)}
+          {linkedChildren.length === 0 && createdPosts.length === 0 ? (
             <section className="kids-empty" aria-labelledby="feed-empty-title">
               <span aria-hidden="true">♡</span>
               <h2 id="feed-empty-title">Todavía no hay niños vinculados</h2>
@@ -68,7 +74,7 @@ export default function Home({ linkedChildren }: Props) {
               {linkedChildren.map((child) => (
                 <article className="post-card" aria-label={`Actualizaciones de ${child.full_name}`} key={child.id}>
                   <header className="post-header">
-                    <div className="post-avatar post-avatar-child" aria-hidden="true">{child.full_name[0]}</div>
+                    <div className="post-avatar post-avatar-child" aria-hidden="true">{child.full_name.charAt(0) || "?"}</div>
                     <div className="post-author"><strong>{child.full_name}</strong><span>Sala {roomName(child)} · hoy</span></div>
                     <div className="post-status status-achievement"><span aria-hidden="true" /> VINCULADO</div>
                   </header>
@@ -80,7 +86,7 @@ export default function Home({ linkedChildren }: Props) {
           )}
         </div>
       </main>
-      <CreatePostModal isOpen={isCreatePostOpen} onClose={() => setIsCreatePostOpen(false)} originRef={createPostTriggerRef} />
+      <CreatePostModal isOpen={isCreatePostOpen} onClose={() => setIsCreatePostOpen(false)} originRef={createPostTriggerRef} postChildren={linkedChildren.map((child) => ({ id: child.id, full_name: child.full_name, room_id: child.room_id, room_name: roomName(child) })) as PostChild[]} onCreated={(post) => setCreatedPosts((current) => [post, ...current])} />
     </div>
   );
 }

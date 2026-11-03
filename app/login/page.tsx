@@ -9,7 +9,7 @@ export default function LoginPage() {
         <div className="login-hero-decoration login-hero-decoration-top" aria-hidden="true" />
         <div className="login-hero-decoration login-hero-decoration-bottom" aria-hidden="true" />
 
-          <Link className="login-brand" href="/" aria-label="Ir al inicio de OpenDayCare">
+          <Link className="login-brand" href="/" aria-label="OpenDayCare: ir al inicio">
           <span className="login-brand-mark" aria-hidden="true">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="4" />
@@ -28,7 +28,10 @@ export default function LoginPage() {
           <p>Publicá momentos, gestioná las salas y mantené a las familias cerca, desde un solo lugar.</p>
         </div>
 
-        <p className="login-hero-footer">🌿 Guardería Sala Soles</p>
+        <p className="login-hero-footer">
+          <span aria-hidden="true">🌿 </span>
+          Guardería Sala Soles
+        </p>
       </section>
 
       <section className="login-form-panel" aria-labelledby="login-title">
@@ -39,7 +42,7 @@ export default function LoginPage() {
           <LoginForm />
 
           <p className="login-activation-prompt">
-            ¿Te invitó la guardería? <a href="/activate-account">Activá tu cuenta</a>
+            ¿Te invitó la guardería? <Link href="/activate-account">Activá tu cuenta</Link>
           </p>
         </div>
       </section>

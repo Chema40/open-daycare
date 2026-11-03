@@ -26,13 +26,15 @@ const avatarColors = [
   ["#C9B6E8", "#7B5FC0"],
 ];
 
+const dateFormatter = new Intl.DateTimeFormat("es", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+
 function dateLabel(value: string) {
   if (!value) return "—";
-  return new Intl.DateTimeFormat("es", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${value}T00:00:00Z`));
+  return dateFormatter.format(new Date(`${value}T00:00:00Z`));
 }
 
 function avatarFor(name: string) {
-  const index = name.charCodeAt(0) % avatarColors.length;
+  const index = (name.charCodeAt(0) || 0) % avatarColors.length;
   return avatarColors[index];
 }
 
@@ -69,7 +71,10 @@ export default function KidsClient({ initialRooms, initialChildren }: Props) {
   const [isSaving, setIsSaving] = useState(false);
   const addButtonRef = useRef<HTMLButtonElement>(null);
 
-  const filteredChildren = useMemo(() => children.filter((child) => child.fullName.toLowerCase().includes(query.toLowerCase())), [children, query]);
+  const filteredChildren = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    return children.filter((child) => child.fullName.toLowerCase().includes(normalizedQuery));
+  }, [children, query]);
 
   function openCreate() {
     setEditingChild(null);
@@ -109,32 +114,37 @@ export default function KidsClient({ initialRooms, initialChildren }: Props) {
 
   async function saveChild(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (isSaving) return;
     if (!validate()) return;
     setIsSaving(true);
     setServerError("");
-    const supabase = createClient();
-    const payload = {
-      room_id: form.roomId,
-      full_name: form.fullName.trim(),
-      birth_date: form.birthDate,
-      enrolled_at: form.enrolledAt,
-      medical_notes: form.medicalNotes.trim() || null,
-      allergy_tags: form.allergyTags.split(",").map((tag) => tag.trim().toLowerCase()).filter(Boolean),
-      photo_consent: form.photoConsent,
-    };
-    const result = editingChild
-      ? await supabase.from("children").update(payload).eq("id", editingChild.id).select().single()
-      : await supabase.from("children").insert(payload).select().single();
-    if (result.error) {
+    try {
+      const supabase = createClient();
+      const payload = {
+        room_id: form.roomId,
+        full_name: form.fullName.trim(),
+        birth_date: form.birthDate,
+        enrolled_at: form.enrolledAt,
+        medical_notes: form.medicalNotes.trim() || null,
+        allergy_tags: form.allergyTags.split(",").map((tag) => tag.trim().toLowerCase()).filter(Boolean),
+        photo_consent: form.photoConsent,
+      };
+      const result = editingChild
+        ? await supabase.from("children").update(payload).eq("id", editingChild.id).select().single()
+        : await supabase.from("children").insert(payload).select().single();
+      if (result.error) {
+        setServerError("No se pudo guardar el niño. Comprueba tu sesión e inténtalo de nuevo.");
+        return;
+      }
+      const roomName = rooms.find((room) => room.id === form.roomId)?.name ?? "Sin sala";
+      const saved: Child = { id: result.data.id, roomId: result.data.room_id, roomName, fullName: result.data.full_name, birthDate: result.data.birth_date, enrolledAt: result.data.enrolled_at, medicalNotes: result.data.medical_notes, allergyTags: result.data.allergy_tags ?? [], photoConsent: result.data.photo_consent, status: result.data.status };
+      setChildren((current) => editingChild ? current.map((child) => child.id === saved.id ? saved : child) : [...current, saved].sort((a, b) => a.fullName.localeCompare(b.fullName)));
+      closeModal();
+    } catch {
       setServerError("No se pudo guardar el niño. Comprueba tu sesión e inténtalo de nuevo.");
+    } finally {
       setIsSaving(false);
-      return;
     }
-    const roomName = rooms.find((room) => room.id === form.roomId)?.name ?? "Sin sala";
-    const saved: Child = { id: result.data.id, roomId: result.data.room_id, roomName, fullName: result.data.full_name, birthDate: result.data.birth_date, enrolledAt: result.data.enrolled_at, medicalNotes: result.data.medical_notes, allergyTags: result.data.allergy_tags ?? [], photoConsent: result.data.photo_consent, status: result.data.status };
-    setChildren((current) => editingChild ? current.map((child) => child.id === saved.id ? saved : child) : [...current, saved].sort((a, b) => a.fullName.localeCompare(b.fullName)));
-    setIsSaving(false);
-    closeModal();
   }
 
   async function archiveChild(child: Child) {
@@ -157,9 +167,9 @@ export default function KidsClient({ initialRooms, initialChildren }: Props) {
       return <section key={room.id} aria-labelledby={`room-${room.id}`}><div className="room-heading"><span id={`room-${room.id}`}>SALA {room.name.toUpperCase()}</span><span>{roomChildren.length} {roomChildren.length === 1 ? "niño" : "niños"}</span><span aria-hidden="true" /></div><div className="kids-grid">{roomChildren.map((child) => { const [backgroundColor, color] = avatarFor(child.fullName); return <article className="kid-card" key={child.id}><Link className="kid-card-link" href={`/kids/${child.id}`}><span className="kid-avatar" style={{ backgroundColor, color }} aria-hidden="true">{child.fullName[0]?.toUpperCase()}</span><span className="kid-card-copy"><strong>{child.fullName}</strong><span>{dateLabel(child.birthDate)} · {child.allergyTags.length ? child.allergyTags.join(", ") : "sin alergias registradas"}</span></span></Link><div className="kid-card-actions"><button type="button" onClick={() => openEdit(child)}>Editar</button><button type="button" onClick={() => archiveChild(child)}>Archivar</button></div></article>; })}</div></section>;
     })}
     {children.length > 0 && !filteredChildren.length && <p className="kids-empty-search">No encontramos niños con ese nombre.</p>}
-  </div>{isModalOpen && <div className="add-kid-modal-overlay"><section className="add-kid-modal" role="dialog" aria-modal="true" aria-labelledby="child-modal-title"><form noValidate onSubmit={saveChild}><header className="add-kid-modal-header"><button className="add-kid-modal-cancel" type="button" onClick={closeModal}>Cancelar</button><h2 id="child-modal-title">{editingChild ? "Editar niño" : "Agregar niño"}</h2><button className="add-kid-modal-submit" type="submit" disabled={isSaving}>{isSaving ? "Guardando…" : "Guardar"}</button></header><div className="add-kid-modal-body"><p className="add-kid-modal-description">Completa los datos del niño. Los campos marcados son obligatorios.</p><Field label="Nombre completo" id="child-full-name" error={errors.fullName}><input id="child-full-name" value={form.fullName} onChange={(event) => setForm({ ...form, fullName: event.target.value })} placeholder="Ej. Martina López" /></Field><div className="add-kid-field-row"><Field label="Fecha de nacimiento" id="child-birth-date" error={errors.birthDate}><input id="child-birth-date" type="date" value={form.birthDate} onChange={(event) => setForm({ ...form, birthDate: event.target.value })} /></Field><Field label="Fecha de ingreso" id="child-enrolled-at" error={errors.enrolledAt}><input id="child-enrolled-at" type="date" value={form.enrolledAt} onChange={(event) => setForm({ ...form, enrolledAt: event.target.value })} /></Field></div><Field label="Sala" id="child-room" error={errors.roomId}><select id="child-room" value={form.roomId} onChange={(event) => setForm({ ...form, roomId: event.target.value })}><option value="">Selecciona una sala</option>{rooms.map((room) => <option value={room.id} key={room.id}>{room.name}</option>)}</select></Field><Field label="Alergias (separadas por coma)" id="child-allergies"><input id="child-allergies" value={form.allergyTags} onChange={(event) => setForm({ ...form, allergyTags: event.target.value })} placeholder="peanut, lactose" /></Field><Field label="Notas médicas" id="child-notes"><textarea id="child-notes" value={form.medicalNotes} onChange={(event) => setForm({ ...form, medicalNotes: event.target.value })} /><label className="child-consent"><input type="checkbox" checked={form.photoConsent} onChange={(event) => setForm({ ...form, photoConsent: event.target.checked })} /> Tiene consentimiento para fotos</label></Field>{serverError && <p className="add-kid-field-error" role="alert">{serverError}</p>}</div></form></section></div>}</AppShell>;
+  </div>{isModalOpen && <div className="add-kid-modal-overlay"><section className="add-kid-modal" role="dialog" aria-modal="true" aria-labelledby="child-modal-title"><form noValidate onSubmit={saveChild}><header className="add-kid-modal-header"><button className="add-kid-modal-cancel" type="button" onClick={closeModal}>Cancelar</button><h2 id="child-modal-title">{editingChild ? "Editar niño" : "Agregar niño"}</h2><button className="add-kid-modal-submit" type="submit" disabled={isSaving}>{isSaving ? "Guardando…" : "Guardar"}</button></header><div className="add-kid-modal-body"><p className="add-kid-modal-description">Completa los datos del niño. Los campos marcados son obligatorios.</p><Field label="Nombre completo" id="child-full-name" error={errors.fullName}><input id="child-full-name" aria-invalid={Boolean(errors.fullName)} aria-describedby={errors.fullName ? "child-full-name-error" : undefined} value={form.fullName} onChange={(event) => setForm({ ...form, fullName: event.target.value })} placeholder="Ej. Martina López" /></Field><div className="add-kid-field-row"><Field label="Fecha de nacimiento" id="child-birth-date" error={errors.birthDate}><input id="child-birth-date" type="date" aria-invalid={Boolean(errors.birthDate)} aria-describedby={errors.birthDate ? "child-birth-date-error" : undefined} value={form.birthDate} onChange={(event) => setForm({ ...form, birthDate: event.target.value })} /></Field><Field label="Fecha de ingreso" id="child-enrolled-at" error={errors.enrolledAt}><input id="child-enrolled-at" type="date" aria-invalid={Boolean(errors.enrolledAt)} aria-describedby={errors.enrolledAt ? "child-enrolled-at-error" : undefined} value={form.enrolledAt} onChange={(event) => setForm({ ...form, enrolledAt: event.target.value })} /></Field></div><Field label="Sala" id="child-room" error={errors.roomId}><select id="child-room" aria-invalid={Boolean(errors.roomId)} aria-describedby={errors.roomId ? "child-room-error" : undefined} value={form.roomId} onChange={(event) => setForm({ ...form, roomId: event.target.value })}><option value="">Selecciona una sala</option>{rooms.map((room) => <option value={room.id} key={room.id}>{room.name}</option>)}</select></Field><Field label="Alergias (separadas por coma)" id="child-allergies"><input id="child-allergies" value={form.allergyTags} onChange={(event) => setForm({ ...form, allergyTags: event.target.value })} placeholder="peanut, lactose" /></Field><Field label="Notas médicas" id="child-notes"><textarea id="child-notes" value={form.medicalNotes} onChange={(event) => setForm({ ...form, medicalNotes: event.target.value })} /><label className="child-consent"><input type="checkbox" checked={form.photoConsent} onChange={(event) => setForm({ ...form, photoConsent: event.target.checked })} /> Tiene consentimiento para fotos</label></Field>{serverError && <p className="add-kid-field-error" role="alert">{serverError}</p>}</div></form></section></div>}</AppShell>;
 }
 
 function Field({ label, id, error, children }: { label: string; id: string; error?: string; children: React.ReactNode }) {
-  return <div className="add-kid-field"><label htmlFor={id}>{label}</label>{children}{error && <p className="add-kid-field-error" role="alert">{error}</p>}</div>;
+  return <div className="add-kid-field"><label htmlFor={id}>{label}</label>{children}{error && <p id={`${id}-error`} className="add-kid-field-error" role="alert">{error}</p>}</div>;
 }

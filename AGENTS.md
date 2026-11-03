@@ -8,51 +8,60 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-## Project workflow
+## Flujo de trabajo del proyecto
 
-- This is a single-package Next.js 16.3.5 App Router project; the application entrypoints are `app/page.tsx`, `app/layout.tsx`, and `app/globals.css`.
-- Use npm and the committed `package-lock.json`; install with `npm ci`.
-- Available commands are `npm run dev`, `npm run lint`, `npm run build`, and `npm run start`. There is no test script or CI configuration in this repository.
-- For focused type checking, run `npx tsc --noEmit`; TypeScript is configured with the `@/*` alias rooted at the repository root.
-- `references/pantallas/` contains product/UI reference HTML and screenshots, not application source; its legacy `support.js` currently causes `npm run lint` to report two errors and several warnings.
-- Keep Playwright screenshots, logs, and related artifacts under `.playwright-mcp/`; that directory is ignored by git.
-- Use Context7 for current framework documentation when Next.js APIs or conventions need verification.
+- Este es un proyecto Next.js 16.3.5 de un solo paquete con App Router; los puntos de entrada de la aplicación son `app/page.tsx`, `app/layout.tsx` y `app/globals.css`.
+- Usa npm y el `package-lock.json` versionado; instala con `npm ci`.
+- Los comandos disponibles son `npm run dev`, `npm run lint`, `npm run build` y `npm run start`. Este repositorio no contiene ningún script de pruebas ni configuración de CI.
+- Para comprobar tipos de forma específica, ejecuta `npx tsc --noEmit`; TypeScript está configurado con el alias `@/*`, cuya raíz es el repositorio.
+- `references/pantallas/` contiene HTML y capturas de referencia del producto/la interfaz, no código fuente de la aplicación; su `support.js` heredado hace que actualmente `npm run lint` informe de dos errores y varias advertencias.
+- Guarda las capturas de Playwright, los registros y los artefactos relacionados en `.playwright-mcp/`; ese directorio está ignorado por git.
+- Usa Context7 para consultar la documentación actual del framework cuando sea necesario verificar las API o convenciones de Next.js.
 
 ## Supabase
 
-- Use the `supabase` skill for any task involving Supabase, including Database, Auth, Storage, Realtime, Edge Functions, the CLI, MCP, `supabase-js`, `@supabase/ssr`, RLS, migrations, logs, or security issues.
-- The application uses `@supabase/supabase-js` for database queries and `@supabase/ssr` for browser/server clients and cookie-based sessions. Keep both packages aligned with `package.json` and update `package-lock.json` when changing them.
-- Next.js does not provide a database client. Use Supabase for database access and use Next.js App Router APIs only as the request/runtime boundary:
-  - Server Components such as `app/page.tsx` may call `cookies()` from `next/headers` and create a client with `utils/supabase/server.ts`.
-  - Client Components must use `utils/supabase/client.ts` and must never receive a service-role or secret key.
-  - `proxy.ts` is the Next.js 16 convention for request middleware and delegates session refresh to `utils/supabase/middleware.ts`.
-- Keep Supabase access behind the existing helpers instead of creating ad-hoc clients in route or component files. Use `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`; never expose privileged keys to the browser.
-- Use the `supabase-postgres-best-practices` skill before writing or changing PostgreSQL queries, schemas, migrations, indexes, triggers, functions, RLS policies, connection settings, or performance diagnostics.
-- Supabase changes frequently; verify the current changelog and official documentation before implementing features or relying on API, CLI, MCP, or configuration behavior.
-- Verify Supabase changes with a test query or equivalent check. If an approach fails after two or three attempts, stop retrying and inspect the error, documentation, and relevant logs.
+- Usa la skill `supabase` para cualquier tarea relacionada con Supabase, incluyendo Database, Auth, Storage, Realtime, Edge Functions, la CLI, MCP, `supabase-js`, `@supabase/ssr`, RLS, migraciones, registros o problemas de seguridad.
+- La aplicación usa `@supabase/supabase-js` para las consultas a la base de datos y `@supabase/ssr` para los clientes de navegador/servidor y las sesiones basadas en cookies. Mantén ambos paquetes alineados con `package.json` y actualiza `package-lock.json` cuando los modifiques.
+- Next.js no proporciona un cliente de base de datos. Usa Supabase para el acceso a datos y las API de App Router de Next.js únicamente como límite de solicitud/ejecución:
+  - Los Server Components, como `app/page.tsx`, pueden llamar a `cookies()` desde `next/headers` y crear un cliente con `utils/supabase/server.ts`.
+  - Los Client Components deben usar `utils/supabase/client.ts` y nunca deben recibir una clave de service role o secreta.
+  - `proxy.ts` es la convención de Next.js 16 para el middleware de solicitudes y delega la actualización de sesión a `utils/supabase/middleware.ts`.
+- Mantén el acceso a Supabase detrás de los helpers existentes en lugar de crear clientes ad hoc en archivos de rutas o componentes. Usa `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`; nunca expongas claves privilegiadas al navegador.
+- Usa la skill `supabase-postgres-best-practices` antes de escribir o modificar consultas, esquemas, migraciones, índices, triggers, funciones, políticas RLS, configuración de conexiones o diagnósticos de rendimiento de PostgreSQL.
+- Supabase cambia con frecuencia; verifica el changelog actual y la documentación oficial antes de implementar funcionalidades o confiar en el comportamiento de sus API, CLI, MCP o configuración.
+- Verifica los cambios de Supabase con una consulta de prueba o una comprobación equivalente. Si un enfoque falla después de dos o tres intentos, deja de reintentarlo e inspecciona el error, la documentación y los registros pertinentes.
 - Siempre consultar y tomar como referencia la tabla o historial de migraciones antes de manipular la base de datos, y volver a comprobarlo después para confirmar la migración aplicada y evitar conflictos de historial.
-- Enable RLS on every table in an exposed schema and write policies for the actual access model. Do not use `user_metadata` for authorization, expose `service_role` or secret keys to clients, or use `auth.role()` in new policies.
-- In Next.js, remember that every `NEXT_PUBLIC_` environment variable is exposed to the browser; use publishable keys in client code and keep privileged keys server-side.
-- Before schema changes, inspect the existing database structure and determine whether the project uses declarative schemas or imperative migrations. Do not invent migration filenames; discover Supabase CLI commands and flags with `--help`.
-- Run Supabase security and performance advisors after database changes when available. Prefer local development and verification before applying changes to a remote project.
+- Activa RLS en todas las tablas de un esquema expuesto y escribe políticas para el modelo de acceso real. No uses `user_metadata` para autorización, no expongas `service_role` ni claves secretas a los clientes y no uses `auth.role()` en políticas nuevas.
+- En Next.js, recuerda que toda variable de entorno `NEXT_PUBLIC_` se expone al navegador; usa claves publicables en el código del cliente y conserva las claves privilegiadas en el servidor.
+- Antes de modificar el esquema, inspecciona la estructura existente de la base de datos y determina si el proyecto usa esquemas declarativos o migraciones imperativas. No inventes nombres de archivos de migración; descubre los comandos y las opciones de la CLI de Supabase con `--help`.
+- Ejecuta los asesores de seguridad y rendimiento de Supabase después de los cambios en la base de datos cuando estén disponibles. Prioriza el desarrollo y la verificación locales antes de aplicar cambios a un proyecto remoto.
 
 
-## Spec Driven Development - Skills
+## Skills de desarrollo guiado por especificaciones
 
 - /spec Usaremos esta habilidad para crear las especificaciones.
 - /spec-impl esta skill para hacer las implementaciones. 
 - Toda especificación relacionada con la base de datos debe crearse en `specs/database`.
 
-## Installed Skills
+## Skills instaladas
 
-- `supabase`: guidance for Supabase integrations, security, CLI, MCP, schema changes, debugging, and verification.
-- `supabase-postgres-best-practices`: PostgreSQL performance, schema design, connection management, concurrency, data access, monitoring, advanced features, and RLS guidance.
+- `supabase`: guía para integraciones con Supabase, seguridad, CLI, MCP, cambios de esquema, depuración y verificación.
+- `supabase-postgres-best-practices`: rendimiento de PostgreSQL, diseño de esquemas, gestión de conexiones, concurrencia, acceso a datos, monitorización, funcionalidades avanzadas y guía sobre RLS.
 
-## Verification
+## Agentes del proyecto
 
-- `acceptance-verifier` (`.opencode/agent/acceptance-verifier.md`) verifica los criterios de aceptación de una spec con inspección del código, comandos del proyecto, Next.js, Playwright y evidencia visual. Actualiza únicamente los checks y las notas de verificación de la spec.
+Los agentes personalizados del proyecto se encuentran en `.opencode/agent/`:
+
+- `acceptance-verifier`: verifica criterios de aceptación de specs mediante inspección del código, comandos del proyecto, Next.js, Playwright y evidencia visual.
+- `accessibility-checker`: audita y mejora los archivos indicados según WCAG 2.2 nivel AA, priorizando HTML semántico y soluciones nativas.
+- `db-migrator`: crea, valida y aplica de forma segura migraciones versionadas de la base de datos de Supabase.
+- `react-best-practices`: revisa y aplica buenas prácticas actuales de React únicamente en los archivos que se indiquen explícitamente.
+
+## Verificación
+
+- `acceptance-verifier` (`.opencode/agent/acceptance-verifier.md`) verifica los criterios de aceptación de una spec mediante la inspección del código, los comandos del proyecto, Next.js, Playwright y evidencia visual. Actualiza únicamente las casillas de verificación y las notas de verificación de la spec.
 - `/verify-spec [ruta-de-la-spec]` delega la verificación al agente `acceptance-verifier`. Si no se indica una ruta y hay varias specs, solicitar aclaración antes de continuar.
 
 ## Reglas de código
 
-- Usar código limpio, nombres, funciones y variables en inglés
+- Usa código limpio y nombres de funciones y variables en inglés.
