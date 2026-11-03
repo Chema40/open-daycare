@@ -1,0 +1,84 @@
+schema: spec-driven
+
+# Project context (optional)
+# Add only constraints that should guide OpenSpec artifacts and workflows.
+# Include constraints an agent cannot infer by reading the code.
+# Keep general project documentation and discoverable codebase facts out.
+# Example:
+#   context: |
+#     Designs and tasks must cover Windows, macOS, and Linux
+#     Write all artifacts in Spanish
+
+context: |
+  OpenDayCare es una plataforma web para la gestión y comunicación de una
+  guardería. Su objetivo es centralizar la información de los niños y sus
+  salas, permitir que el personal autorizado publique actualizaciones sobre
+  su actividad diaria y ofrecer a padres o tutores acceso seguro únicamente a
+  la información de los niños vinculados con ellos.
+
+  El producto contempla dos perfiles principales: personal de la guardería,
+  que gestiona niños, salas, publicaciones e invitaciones; y padres o tutores,
+  que consultan el feed y la información de sus hijos. La privacidad y el
+  aislamiento entre guarderías y familias son requisitos funcionales, no solo
+  detalles técnicos.
+
+  Escribe todos los artefactos de OpenSpec en español, manteniendo en inglés
+  únicamente nombres de código, rutas, tablas, columnas, variables de entorno
+  y APIs cuando sea necesario.
+
+  Las funcionalidades que impliquen datos persistentes, autenticación,
+  autorización, invitaciones o visibilidad de contenido deben especificar
+  explícitamente sus reglas de acceso y sus casos de error. Nunca se debe
+  confiar en datos enviados por el cliente para determinar roles, guarderías,
+  permisos o relaciones padre-niño.
+
+  Los cambios de base de datos deben documentarse en specs/database y seguir
+  el flujo de migraciones de Supabase. No se deben exponer claves secretas ni
+  usar credenciales privilegiadas en componentes de cliente.
+
+  Las nuevas pantallas y flujos deben conservar la identidad visual de
+  OpenDayCare y ser usables en escritorio y móvil, incluyendo semántica HTML,
+  nombres accesibles, foco visible y ausencia de scroll horizontal.
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always state what is out of scope
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+rules:
+  proposal:
+    - Explica cómo el cambio contribuye a la gestión de la guardería o a la comunicación segura con las familias.
+    - Declara siempre el alcance, lo que queda fuera de alcance y los perfiles de usuario afectados.
+    - Incluye los riesgos de privacidad, autorización y visibilidad cuando el cambio trate datos de niños o familias.
+  design:
+    - Define los estados de éxito, carga, error, permisos insuficientes y datos vacíos cuando sean relevantes.
+    - Distingue claramente entre comportamiento real persistente y affordances visuales todavía no funcionales.
+  tasks:
+    - Incluye verificación responsive y de accesibilidad para cualquier cambio de interfaz.
+    - Incluye comprobaciones de autorización y aislamiento de datos para cualquier cambio de backend o base de datos.
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing
+
+operations:
+  apply:
+    guidance:
+      - Verifica tipos, build y las comprobaciones específicas del cambio antes de darlo por terminado.
+      - Para cambios de Supabase, inspecciona el esquema y las migraciones antes y después, y documenta la verificación de RLS.
+  archive:
+    guidance:
+      - Resume qué parte del objetivo de OpenDayCare quedó implementada y qué limitaciones permanecen.
