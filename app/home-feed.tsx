@@ -3,22 +3,16 @@
 import { useRef, useState, type MouseEvent } from "react";
 import Link from "next/link";
 import CreatePostModal, { type CreatedPost, type PostChild } from "@/app/create-post-modal";
+import type { FeedChild } from "@/app/feed-data";
 import Counter from "@/app/counter";
 
-type FeedChild = {
-  id: string;
-  full_name: string;
-  room_id: string;
-  rooms: { id: string; name: string } | { id: string; name: string }[] | null;
-};
-
-type Props = { linkedChildren: FeedChild[]; canCreatePosts: boolean; initialPosts: CreatedPost[] };
+type Props = { linkedChildren: FeedChild[]; canCreatePosts: boolean; initialPosts: CreatedPost[]; panel: "staff" | "family"; profileName: string };
 
 function roomName(child: FeedChild) {
   return Array.isArray(child.rooms) ? child.rooms[0]?.name ?? "Sin sala" : child.rooms?.name ?? "Sin sala";
 }
 
-export default function Home({ linkedChildren, canCreatePosts, initialPosts }: Props) {
+export default function Home({ linkedChildren, canCreatePosts, initialPosts, panel, profileName }: Props) {
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
   const [createdPosts, setCreatedPosts] = useState<CreatedPost[]>(initialPosts);
   const createPostTriggerRef = useRef<HTMLElement | null>(null);
@@ -31,18 +25,18 @@ export default function Home({ linkedChildren, canCreatePosts, initialPosts }: P
   return (
     <div className="app-shell">
       <aside className="sidebar" aria-label="Navegación principal">
-        <Link className="brand" href="/" aria-label="Ir al inicio de OpenDayCare">
+        <Link className="brand" href={panel === "staff" ? "/staff/feed" : "/family/feed"} aria-label="Ir al inicio de OpenDayCare">
           <span className="brand-mark" aria-hidden="true" />
           <span className="brand-copy"><strong>OpenDayCare</strong><span>Sala Soles</span></span>
         </Link>
         {canCreatePosts && <button className="new-post-link" type="button" onClick={openCreatePost}><span aria-hidden="true">＋</span> Nueva publicación</button>}
         <nav className="main-nav" aria-label="Secciones de OpenDayCare">
-          <Link className="nav-link is-active" href="/" aria-current="page"><span aria-hidden="true">⌂</span> Feed</Link>
-          <Link className="nav-link" href="/kids"><span aria-hidden="true">♧</span> Niños</Link>
+          <Link className="nav-link is-active" href={panel === "staff" ? "/staff/feed" : "/family/feed"} aria-current="page"><span aria-hidden="true">⌂</span> Feed</Link>
+          {panel === "staff" && <Link className="nav-link" href="/staff/kids"><span aria-hidden="true">♧</span> Niños</Link>}
           <a className="nav-link" href="#"><span aria-hidden="true">♢</span> Avisos</a>
           <a className="nav-link" href="#"><span aria-hidden="true">♙</span> Mi cuenta</a>
         </nav>
-        <div className="profile-summary"><div className="profile-avatar" aria-hidden="true">C</div><div className="profile-copy"><strong>OpenDayCare</strong><span>Feed personalizado</span></div></div>
+        <div className="profile-summary"><div className="profile-avatar" aria-hidden="true">{profileName.charAt(0).toUpperCase()}</div><div className="profile-copy"><strong>{profileName}</strong><span>{panel === "staff" ? "Personal · OpenDayCare" : "Familia · Feed personalizado"}</span></div></div>
       </aside>
 
       <main className="feed-main">

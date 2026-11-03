@@ -216,6 +216,22 @@ textarea:focus-visible {
   overflow-y: auto;
 }
 
+.access-placeholder {
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  text-align: center;
+  background: var(--cream);
+  color: var(--ink);
+}
+
+.access-placeholder h1,
+.access-placeholder p {
+  margin: 0;
+}
+
 .feed-container {
   width: 100%;
   max-width: 760px;
